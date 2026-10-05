@@ -87,7 +87,7 @@ jobs:
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet">
           <style>
-          :root{--bg:#055548;--sf:#E6EBEE;--ink:#fff;--mut:#BFE3DC;--ln:#0B6B5C;--pri:#1CAF9F;--onp:#fff;--acc:#D9A010;--ub:#E6EBEE;--uk:#2B1A8A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+          :root{--bg:#e6eefa;--sf:rgba(255,255,255,.55);--ink:#0f1f33;--mut:#566a82;--ln:rgba(15,31,51,.12);--pri:#2f6bff;--onp:#fff;--acc:#ff9f43;--ub:rgba(47,107,255,.88);--uk:#fff;--glass:rgba(255,255,255,.42);--edge:rgba(255,255,255,.75);--ov:rgba(230,238,250,.82);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
           *{box-sizing:border-box}
           html{scroll-padding-top:env(safe-area-inset-top,0px)}
           html,body{height:100%;margin:0}
@@ -122,24 +122,36 @@ jobs:
           .kb{display:flex;gap:8px;padding:10px 16px}.kb input{flex:1;min-width:0;padding:10px 14px;border:1px solid var(--ln);border-radius:22px;background:var(--sf);color:var(--ink);font:inherit}.kb button{border:0;border-radius:22px;padding:0 16px;background:var(--pri);color:var(--onp);font:inherit;cursor:pointer}
           [hidden]{display:none!important}
 
-          header{background:#1CAF9F;color:#fff}
-          header small{color:#E3F7F3}
+
+          :root[data-theme="dark"]{--bg:#090e1a;--sf:rgba(255,255,255,.08);--ink:#eaf1fb;--mut:#9fb2cb;--ln:rgba(255,255,255,.12);--pri:#78afff;--onp:#041126;--ub:rgba(84,130,255,.55);--uk:#fff;--glass:rgba(255,255,255,.08);--edge:rgba(255,255,255,.2);--ov:rgba(9,14,26,.8)}
+          @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090e1a;--sf:rgba(255,255,255,.08);--ink:#eaf1fb;--mut:#9fb2cb;--ln:rgba(255,255,255,.12);--pri:#78afff;--onp:#041126;--ub:rgba(84,130,255,.55);--uk:#fff;--glass:rgba(255,255,255,.08);--edge:rgba(255,255,255,.2);--ov:rgba(9,14,26,.8)}}
+          body{background:radial-gradient(55% 35% at 12% 8%,rgba(110,150,255,.55),transparent 70%),radial-gradient(50% 35% at 95% 32%,rgba(255,140,200,.4),transparent 70%),radial-gradient(60% 45% at 25% 98%,rgba(80,230,190,.4),transparent 70%),var(--bg);background-attachment:fixed}
+          header,.row,.msg.a,.u,.chip,.kb,.hrow,#hp .top,textarea,#back,#keyb,.ib,#mic{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);border:1px solid var(--edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 24px rgba(0,0,0,.10)}
           .strip{display:none}
-          #back,#keyb{background:transparent;border:0;color:#fff;font-size:24px}
-          main{padding:8px 10px}
-          .hi{color:#fff}
-          .row{position:relative;background:#E6EBEE;border:5px solid #D9A010;border-radius:18px;padding:12px 48px 12px 12px;margin:0 0 8px;min-height:84px}
-          .row i{font-size:34px;width:52px}
-          .row div{flex:1;text-align:center}
-          .row b{color:#2B1A8A;font-size:17px}
-          .row span{display:block;color:#4A4A7A}
-          .row::after{content:"›";position:absolute;right:14px;top:50%;transform:translateY(-54%);color:#2DB39E;font-size:46px;font-weight:300}
-          code{background:#044236;color:#fff;border-color:#0B6B5C}
-          .chip{border-color:#D9A010;color:#fff}
-          footer{border-top:1px solid #0B6B5C}
-          textarea,.kb input{background:#E6EBEE;color:#2B1A8A;border:0}
-          .kb button{background:#D9A010;color:#2B1A8A}
-          #go{background:#1CAF9F;color:#fff}
+          header{margin:10px 12px 0;padding:10px 12px;border-radius:26px}
+          .tools{margin-left:auto;display:flex;gap:6px}
+          #back,#keyb,.ib,#mic{width:40px;height:40px;border-radius:50%;font-size:18px;color:var(--ink);cursor:pointer;padding:0;flex:none}
+          main{padding:12px}
+          .row{border-radius:22px;padding:12px 14px;margin:0 0 10px}
+          .row b{color:var(--ink)}
+          .row::after{content:"›";margin-left:auto;font-size:28px;color:var(--mut)}
+          .msg.a{padding:12px 14px;border-radius:20px 20px 20px 6px;max-width:94%}
+          .u{background:var(--ub);color:var(--uk);border-radius:20px 20px 6px 20px}
+          img.gen{display:block;max-width:100%;min-height:120px;border-radius:16px;margin-top:10px;background:var(--glass)}
+          footer{border:0;background:transparent;padding:6px 12px 12px}
+          #go{background:var(--pri);color:var(--onp);box-shadow:0 6px 18px rgba(47,107,255,.35)}
+          textarea{border-radius:22px}
+          .kb{margin:8px 12px 0;border-radius:20px}
+          .kb input{background:transparent;border:0;outline:0;color:var(--ink)}
+          #hp{position:fixed;inset:0;z-index:5;max-width:640px;margin:0 auto;overflow:auto;background:var(--ov);-webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px}
+          #hp .top{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:24px;margin-bottom:12px}
+          #hp .top b{flex:1;font-size:18px}
+          #hp .top button:not(.ib){background:var(--pri);color:var(--onp);border:0;border-radius:18px;padding:9px 14px;font:inherit;cursor:pointer}
+          .hrow{display:flex;align-items:center;margin-bottom:8px;border-radius:18px}
+          .hrow .o{flex:1;min-width:0;text-align:left;background:none;border:0;color:var(--ink);font:inherit;padding:12px 14px;cursor:pointer}
+          .hrow .o b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+          .hrow small{color:var(--mut)}
+          .hrow .x{background:none;border:0;font-size:18px;padding:12px 14px;cursor:pointer}
           </style>
           </head>
           <body>
@@ -147,7 +159,7 @@ jobs:
             <header>
               <button id="back" aria-label="Orqaga" hidden>‹</button>
               <div><h1>Yordamchi</h1><small id="sub">10 ta ish zonasi</small></div>
-              <button id="keyb" aria-label="API kalit" style="margin-left:auto">🔑</button>
+              <span class="tools"><button id="hist" class="ib" aria-label="Tarix">🕘</button><button id="thm" class="ib" aria-label="Mavzu">🌓</button><button id="keyb" aria-label="API kalit">🔑</button></span>
             </header>
             <div class="strip"></div>
             <div id="keybox" class="kb" hidden><input id="kin" type="password" placeholder="Gemini API kalit (AIza…)" autocomplete="off"><button id="ksave">Saqlash</button></div>
@@ -162,10 +174,11 @@ jobs:
             <footer>
               <div class="cmp">
                 <textarea id="inp" rows="1" placeholder="Xabar yozing…"></textarea>
-                <button id="go" aria-label="Yuborish">↑</button>
+                <button id="mic" aria-label="Ovoz bilan yozish">🎤</button><button id="go" aria-label="Yuborish">↑</button>
               </div>
             </footer>
           </div>
+          <div id="hp" hidden></div>
           <script>
           const Z=[
           {n:"Vazifalar va reja",d:"Kunlik va haftalik reja, ustuvorliklar",e:"📋",p:`Vazifalarni shoshilinch va muhimlik bo‘yicha tartibla, kunlik va haftalik reja tuz, katta ishni kichik qadamlarga bo‘l.`,s:"Ertangi 5 ta vazifamni muhimlik bo‘yicha tartibla"},
@@ -179,7 +192,7 @@ jobs:
           {n:"Kontent",d:"Post, reklama matni, g‘oyalar",e:"✨",p:`Post, reklama matni, sarlavha, skript va g‘oyalar yoz; auditoriya va platformaga moslashtir.`,s:"Kofe do‘koni uchun Instagram post yoz"},
           {n:"O‘rganish",d:"Tushuntirish, dars rejasi, test",e:"🎓",p:`Mavzuni sodda tushuntir, misol keltir, dars rejasi va test savollari tuz.`,s:"Inflyatsiya nima? Oddiy misol bilan tushuntir"}
           ];
-          const BASE=`Sen — shaxsiy AI agentsan (biznes, savdo, o‘qish va kontent bo‘yicha). O‘zbek tilida (lotin yozuvida) javob ber; foydalanuvchi boshqa tilda yozsa, shu tilda. Qisqa, aniq, do‘stona bo‘l, javobni natijadan boshla. Javob telefon ekranida o‘qiladi, shuning uchun ixcha yoz. Noaniq bo‘lsa, bitta aniqlashtiruvchi savol ber. Bilmasangiz, ochiq ayt, ma‘lumot to‘qima. Budilnik qo‘ya olasan: foydalanuvchi budilnik so‘rasa, javobingga alohida qatorda [[ALARM:SS:DD|yozuv|kunlar]] yoz (SS:DD — 24 soatlik vaqt; kunlar ixtiyoriy, 1=yakshanba … 7=shanba, vergul bilan, bir martalik bo‘lsa bo‘sh). Masalan: [[ALARM:06:30|Mashq|2,3,4,5,6]]. Vaqt aniq bo‘lmasa, avval so‘ra. Internet, kalendar yoki xabar yuborishga ulanmagansan; bunday so‘ralsa, tayyor qoralama yoki reja ber. Vazifa oxirida keyingi qadamni bir jumlada taklif qil.`;
+          const BASE=`Sen — shaxsiy AI agentsan (biznes, savdo, o‘qish va kontent bo‘yicha). O‘zbek tilida (lotin yozuvida) javob ber; foydalanuvchi boshqa tilda yozsa, shu tilda. Qisqa, aniq, do‘stona bo‘l, javobni natijadan boshla. Javob telefon ekranida o‘qiladi, shuning uchun ixcha yoz. Noaniq bo‘lsa, bitta aniqlashtiruvchi savol ber. Bilmasangiz, ochiq ayt, ma‘lumot to‘qima. Budilnik qo‘ya olasan: foydalanuvchi budilnik so‘rasa, javobingga alohida qatorda [[ALARM:SS:DD|yozuv|kunlar]] yoz (SS:DD — 24 soatlik vaqt; kunlar ixtiyoriy, 1=yakshanba … 7=shanba, vergul bilan, bir martalik bo‘lsa bo‘sh). Masalan: [[ALARM:06:30|Mashq|2,3,4,5,6]]. Vaqt aniq bo‘lmasa, avval so‘ra. Rasm so‘ralsa (rasm, surat, logo, illyustratsiya), javobing oxirida alohida qatorda [[IMG:ingliz tilidagi batafsil tasvir]] yoz va rasm tayyorlanayotganini bir jumlada ayt. Video yarata olmaysan: so‘ralsa, ochiq ayt va ssenariy yoki kadrlar rejasini taklif qil. Internet, kalendar yoki xabar yuborishga ulanmagansan; bunday so‘ralsa, tayyor qoralama yoki reja ber. Vazifa oxirida keyingi qadamni bir jumlada taklif qil.`;
           const $=s=>document.querySelector(s);
           const feed=$("#feed"),chat=$("#chat"),inp=$("#inp"),go=$("#go");
           let zone=null,hist=[],busy=false;
@@ -204,10 +217,10 @@ jobs:
             $("#sub").textContent=inChat?(zone?zone.n:"Avto zona"):"10 ta ish zonasi";
           }
           function reset(){
-            zone=null;hist=[];chat.innerHTML="";show(false);feed.scrollTop=0;
+            zone=null;hist=[];cid=null;chat.innerHTML="";show(false);feed.scrollTop=0;
           }
           function openZone(i){
-            zone=Z[i];hist=[];chat.innerHTML="";show(true);
+            zone=Z[i];hist=[];cid=null;chat.innerHTML="";show(true);
             const d=document.createElement("div");d.className="intro";
             d.innerHTML="<b>"+zone.e+" "+esc(zone.n)+"</b><p>"+esc(zone.d)+"</p>";
             const c=document.createElement("button");c.className="chip";c.textContent=zone.s;
@@ -225,13 +238,13 @@ jobs:
             if(chat.hidden)show(true);
             chat.querySelector(".intro")?.remove();
             add("u",esc(text));
-            hist.push({role:"user",content:text});
+            hist.push({role:"user",content:text});if(!cid)cid=String(Date.now());
             const b=add("a wait","Yozmoqda…");
             busy=true;go.disabled=true;
             try{
               const raw=await ask(instr(),hist);
-              b.classList.remove("wait");b.innerHTML=fmt(handleAlarm(raw));
-              hist.push({role:"assistant",content:raw});
+              b.classList.remove("wait");view(b,raw);alarmNote(raw,b);
+              hist.push({role:"assistant",content:raw});save();
             }catch(e){
               hist.pop();
               b.classList.add("wait");
@@ -259,6 +272,64 @@ jobs:
           const kb=$("#keybox");kb.hidden=Android.hasKey();
           $("#keyb").onclick=()=>{kb.hidden=!kb.hidden};
           $("#ksave").onclick=()=>{const v=$("#kin").value.trim();if(v.length>20){Android.saveKey(v);$("#kin").value="";kb.hidden=true}};
+          let cid=null;
+          const ALARM=/\[\[ALARM:(\d{1,2}):(\d{2})\|([^|\]]*)\|?([\d,]*)\]\]/g;
+          const IMG=/\[\[IMG:([^\]]+)\]\]/g;
+          const sd=s=>{let x=7;for(const c of s)x=(x*31+c.charCodeAt(0))>>>0;return x%100000};
+          function view(el,raw){
+            el.innerHTML=fmt(raw.replace(IMG,"").replace(ALARM,"").trim());
+            for(const m of raw.matchAll(IMG)){
+              const p=m[1].trim(),im=document.createElement("img");
+              im.className="gen";im.alt=p;
+              im.onerror=()=>{const s=document.createElement("div");s.className="wait";s.textContent="Rasm yuklanmadi. Bepul xizmat band, 15 soniyadan keyin qayta urinib ko‘ring.";im.replaceWith(s)};
+              im.src="https://image.pollinations.ai/prompt/"+encodeURIComponent(p)+"?width=768&height=768&nologo=true&seed="+sd(p);
+              el.append(im);
+            }
+          }
+          function alarmNote(raw,el){
+            let note="";
+            for(const m of raw.matchAll(ALARM)){
+              const ok=Android.setAlarm(+m[1],+m[2],m[3]||"Yordamchi",m[4]||"");
+              note+="\n"+(ok?"⏰ Budilnik qo‘yildi: "+m[1].padStart(2,"0")+":"+m[2]:"Budilnik qo‘yilmadi: "+m[1]+":"+m[2]);
+            }
+            if(note)el.append(document.createTextNode(note));
+          }
+          const load=()=>{try{return JSON.parse(localStorage.getItem("yh")||"[]")}catch(e){return[]}};
+          const store=a=>{try{localStorage.setItem("yh",JSON.stringify(a.slice(0,50)))}catch(e){}};
+          function save(){
+            if(!hist.length||!cid)return;
+            const a=load().filter(c=>c.id!==cid);
+            a.unshift({id:cid,z:zone?Z.indexOf(zone):-1,title:hist[0].content.slice(0,40),m:hist.slice(),t:Date.now()});
+            store(a);
+          }
+          function openChat(c){
+            zone=c.z>=0?Z[c.z]:null;hist=c.m.slice();cid=c.id;chat.innerHTML="";show(true);
+            hist.forEach(m=>{if(m.role==="user")add("u",esc(m.content));else view(add("a",""),m.content)});
+            $("#hp").hidden=true;down();
+          }
+          function hpOpen(){
+            const hp=$("#hp"),a=load();
+            hp.innerHTML='<div class="top"><b>Suhbatlar</b><button id="hn">＋ Yangi</button><button class="ib" id="hc" aria-label="Yopish">✕</button></div>';
+            if(!a.length)hp.insertAdjacentHTML("beforeend",'<p class="hint">Hali suhbat yo‘q.</p>');
+            a.forEach(c=>{
+              const r=document.createElement("div");r.className="hrow";
+              r.innerHTML='<button class="o"><b></b><small></small></button><button class="x" aria-label="O‘chirish">🗑</button>';
+              r.querySelector("b").textContent=c.title;
+              r.querySelector("small").textContent=(c.z>=0?Z[c.z].n:"Avto")+" · "+new Date(c.t).toLocaleDateString();
+              r.querySelector(".o").onclick=()=>openChat(c);
+              r.querySelector(".x").onclick=()=>{store(load().filter(x=>x.id!==c.id));hpOpen()};
+              hp.append(r);
+            });
+            $("#hn").onclick=()=>{hp.hidden=true;reset()};
+            $("#hc").onclick=()=>{hp.hidden=true};
+            hp.hidden=false;
+          }
+          $("#hist").onclick=hpOpen;
+          const R=document.documentElement,dm=matchMedia("(prefers-color-scheme:dark)");
+          try{const t=localStorage.getItem("th");if(t)R.dataset.theme=t}catch(e){}
+          $("#thm").onclick=()=>{const n=(R.dataset.theme||(dm.matches?"dark":"light"))==="dark"?"light":"dark";R.dataset.theme=n;try{localStorage.setItem("th",n)}catch(e){}};
+          $("#mic").onclick=()=>Android.listen();
+          window.onVoice=t=>{if(t){inp.value=(inp.value+" "+t).trim();size();inp.focus()}};
           inp.addEventListener("input",size);
           inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}});
           go.onclick=send;
@@ -276,6 +347,7 @@ jobs:
           import android.content.Intent
           import android.os.Bundle
           import android.provider.AlarmClock
+          import android.speech.RecognizerIntent
           import android.webkit.JavascriptInterface
           import android.webkit.WebChromeClient
           import android.webkit.WebView
@@ -309,7 +381,30 @@ jobs:
                   web.evaluateJavascript(js) { r -> if (r != "1") finish() }
               }
 
+              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                  super.onActivityResult(requestCode, resultCode, data)
+                  if (requestCode == 7 && resultCode == RESULT_OK) {
+                      val t = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: ""
+                      web.evaluateJavascript("onVoice(${JSONObject.quote(t)})", null)
+                  }
+              }
+
               inner class Bridge {
+                  @JavascriptInterface
+                  fun listen() {
+                      runOnUiThread {
+                          try {
+                              val i = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                                  .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                  .putExtra(RecognizerIntent.EXTRA_LANGUAGE, "uz-UZ")
+                                  .putExtra(RecognizerIntent.EXTRA_PROMPT, "Gapiring…")
+                              startActivityForResult(i, 7)
+                          } catch (e: Exception) {
+                              web.evaluateJavascript("onVoice('')", null)
+                          }
+                      }
+                  }
+
                   @JavascriptInterface
                   fun hasKey(): Boolean = !prefs.getString("key", "").isNullOrEmpty()
 
