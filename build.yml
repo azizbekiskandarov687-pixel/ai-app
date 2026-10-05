@@ -1,0 +1,392 @@
+name: Build APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Create project
+        run: |
+          mkdir -p 'Yordamchi'
+          cat > 'Yordamchi/build.gradle.kts' <<'__EOF__'
+          plugins {
+              id("com.android.application") version "8.5.2" apply false
+              id("org.jetbrains.kotlin.android") version "2.0.20" apply false
+          }
+          __EOF__
+          mkdir -p 'Yordamchi'
+          cat > 'Yordamchi/gradle.properties' <<'__EOF__'
+          org.gradle.jvmargs=-Xmx2048m
+          android.nonTransitiveRClass=true
+          __EOF__
+          mkdir -p 'Yordamchi'
+          cat > 'Yordamchi/settings.gradle.kts' <<'__EOF__'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositories { google(); mavenCentral() } }
+          rootProject.name = "Yordamchi"
+          include(":app")
+          __EOF__
+          mkdir -p 'Yordamchi/app'
+          cat > 'Yordamchi/app/build.gradle.kts' <<'__EOF__'
+          plugins {
+              id("com.android.application")
+              id("org.jetbrains.kotlin.android")
+          }
+          android {
+              namespace = "uz.yordamchi"
+              compileSdk = 34
+              defaultConfig {
+                  applicationId = "uz.yordamchi"
+                  minSdk = 24
+                  targetSdk = 34
+                  versionCode = 1
+                  versionName = "1.0"
+              }
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+              kotlinOptions { jvmTarget = "17" }
+          }
+          __EOF__
+          mkdir -p 'Yordamchi/app/src/main'
+          cat > 'Yordamchi/app/src/main/AndroidManifest.xml' <<'__EOF__'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+              <application
+                  android:label="Yordamchi"
+                  android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:windowSoftInputMode="adjustResize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          __EOF__
+          mkdir -p 'Yordamchi/app/src/main/assets'
+          cat > 'Yordamchi/app/src/main/assets/index.html' <<'__EOF__'
+          <!doctype html>
+          <html lang="uz">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+          <title>Yordamchi — shaxsiy AI agent</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet">
+          <style>
+          :root{--bg:#055548;--sf:#E6EBEE;--ink:#fff;--mut:#BFE3DC;--ln:#0B6B5C;--pri:#1CAF9F;--onp:#fff;--acc:#D9A010;--ub:#E6EBEE;--uk:#2B1A8A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+          *{box-sizing:border-box}
+          html{scroll-padding-top:env(safe-area-inset-top,0px)}
+          html,body{height:100%;margin:0}
+          body{background:var(--bg);color:var(--ink);font:16px/1.5 Onest,system-ui,-apple-system,"Segoe UI",sans-serif}
+          #app{height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+          header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+          header h1{font-size:20px;line-height:1.2;margin:0;font-weight:700}
+          header small{display:block;color:var(--mut);font-size:13px}
+          .strip{height:5px;margin:0 16px;background:repeating-linear-gradient(90deg,var(--pri) 0 14px,var(--acc) 14px 18px,transparent 18px 22px)}
+          #back,#keyb{width:36px;height:36px;border-radius:50%;border:1px solid var(--ln);background:var(--sf);color:var(--ink);font-size:20px;cursor:pointer}
+          main{flex:1;overflow-y:auto;padding:6px 16px 12px}
+          .hi{margin:14px 0 6px;font-size:22px;font-weight:700;line-height:1.25}
+          .hint{color:var(--mut);font-size:14px;margin:0 0 8px}
+          .row{display:flex;gap:14px;align-items:center;width:100%;padding:12px 2px;background:none;border:0;border-bottom:1px solid var(--ln);color:inherit;font:inherit;text-align:left;cursor:pointer}
+          .row i{font-style:normal;font-size:24px;width:34px;text-align:center}
+          .row b{display:block;font-weight:700;line-height:1.3}
+          .row span{color:var(--mut);font-size:14px}
+          .msg{margin:14px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+          .u{margin-left:auto;width:fit-content;max-width:86%;background:var(--ub);color:var(--uk);padding:10px 14px;border-radius:18px 18px 4px 18px}
+          .wait{color:var(--mut)}
+          code{background:var(--sf);border:1px solid var(--ln);border-radius:4px;padding:0 4px;font-size:.92em}
+          .intro{margin:14px 0}
+          .intro b{font-size:18px}
+          .intro p{margin:2px 0 12px;color:var(--mut)}
+          .chip{display:inline-block;padding:9px 14px;border:1px solid var(--pri);color:var(--pri);background:none;border-radius:999px;font:inherit;font-size:14px;cursor:pointer;text-align:left}
+          footer{padding:10px 16px 12px;border-top:1px solid var(--ln);background:var(--bg)}
+          .cmp{display:flex;gap:8px;align-items:flex-end}
+          textarea{flex:1;resize:none;max-height:140px;min-height:44px;padding:10px 14px;border:1px solid var(--ln);border-radius:22px;background:var(--sf);color:var(--ink);font:inherit}
+          #go{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:var(--pri);color:var(--onp);font-size:20px;cursor:pointer}
+          #go:disabled{opacity:.5}
+          button:focus-visible,textarea:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+          .kb{display:flex;gap:8px;padding:10px 16px}.kb input{flex:1;min-width:0;padding:10px 14px;border:1px solid var(--ln);border-radius:22px;background:var(--sf);color:var(--ink);font:inherit}.kb button{border:0;border-radius:22px;padding:0 16px;background:var(--pri);color:var(--onp);font:inherit;cursor:pointer}
+          [hidden]{display:none!important}
+
+          header{background:#1CAF9F;color:#fff}
+          header small{color:#E3F7F3}
+          .strip{display:none}
+          #back,#keyb{background:transparent;border:0;color:#fff;font-size:24px}
+          main{padding:8px 10px}
+          .hi{color:#fff}
+          .row{position:relative;background:#E6EBEE;border:5px solid #D9A010;border-radius:18px;padding:12px 48px 12px 12px;margin:0 0 8px;min-height:84px}
+          .row i{font-size:34px;width:52px}
+          .row div{flex:1;text-align:center}
+          .row b{color:#2B1A8A;font-size:17px}
+          .row span{display:block;color:#4A4A7A}
+          .row::after{content:"›";position:absolute;right:14px;top:50%;transform:translateY(-54%);color:#2DB39E;font-size:46px;font-weight:300}
+          code{background:#044236;color:#fff;border-color:#0B6B5C}
+          .chip{border-color:#D9A010;color:#fff}
+          footer{border-top:1px solid #0B6B5C}
+          textarea,.kb input{background:#E6EBEE;color:#2B1A8A;border:0}
+          .kb button{background:#D9A010;color:#2B1A8A}
+          #go{background:#1CAF9F;color:#fff}
+          </style>
+          </head>
+          <body>
+          <div id="app">
+            <header>
+              <button id="back" aria-label="Orqaga" hidden>‹</button>
+              <div><h1>Yordamchi</h1><small id="sub">10 ta ish zonasi</small></div>
+              <button id="keyb" aria-label="API kalit" style="margin-left:auto">🔑</button>
+            </header>
+            <div class="strip"></div>
+            <div id="keybox" class="kb" hidden><input id="kin" type="password" placeholder="Anthropic API kalit (sk-ant-…)" autocomplete="off"><button id="ksave">Saqlash</button></div>
+            <main id="feed">
+              <section id="home">
+                <p class="hi">Salom! Bugun nimani hal qilamiz?</p>
+                <p class="hint">Zonani tanlang yoki pastga yozing. Zonani agent o‘zi aniqlaydi. Reja, qoralama, tahlil, tarjima — va budilnik ham qo‘yadi.</p>
+                <div id="zones"></div>
+              </section>
+              <section id="chat" hidden></section>
+            </main>
+            <footer>
+              <div class="cmp">
+                <textarea id="inp" rows="1" placeholder="Xabar yozing…"></textarea>
+                <button id="go" aria-label="Yuborish">↑</button>
+              </div>
+            </footer>
+          </div>
+          <script>
+          const Z=[
+          {n:"Vazifalar va reja",d:"Kunlik va haftalik reja, ustuvorliklar",e:"📋",p:`Vazifalarni shoshilinch va muhimlik bo‘yicha tartibla, kunlik va haftalik reja tuz, katta ishni kichik qadamlarga bo‘l.`,s:"Ertangi 5 ta vazifamni muhimlik bo‘yicha tartibla"},
+          {n:"Kalendar",d:"Uchrashuv, eslatma, vaqt taqsimoti",e:"🗓",p:`Uchrashuv va eslatmalarni tartibla, vaqt to‘qnashuvini ko‘rsat, bo‘sh vaqt taklif qil.`,s:"Haftam uchun uchrashuvlar jadvalini tuz"},
+          {n:"Xat va xabarlar",d:"Email, Telegram, rasmiy xat",e:"✉️",p:`Email, Telegram va rasmiy xatlarni yoz. Ohangni moslashtir (rasmiy, do‘stona, qat‘iy). Yuborishni foydalanuvchining o‘ziga qoldir.`,s:"Mijozga to‘lov kechikkani haqida muloyim xat yoz"},
+          {n:"Hujjatlar",d:"Yozish, tahrir, qisqa xulosa",e:"📄",p:`Matn yoz, tahrirla, xatolarini tuzat, uzun matndan qisqa xulosa chiqar.`,s:"Shu matnni tahrirla va qisqartir:"},
+          {n:"Tadqiqot",d:"Ma‘lumot yig‘ish, taqqoslash",e:"🔎",p:`Mavzuni tahlil qil, variantlarni taqqosla, ishonchsiz joyini belgila. Internetdan qidira olmaysan: bilganing asosida javob ber va yangilanishi mumkin bo‘lgan joyni ayt.`,s:"Onlayn do‘kon ochish uchun 3 ta platformani taqqosla"},
+          {n:"Tarjima",d:"O‘zbek, rus, ingliz tillari",e:"🌐",p:`O‘zbek, rus va ingliz tillari orasida tarjima qil, ma‘no va ohangni saqla.`,s:"Ruscha va inglizchaga tarjima qil: Buyurtmangiz tayyor"},
+          {n:"Moliya",d:"Byudjet, xarajat, foyda",e:"💰",p:`Byudjet tuz, xarajat va foydani hisobla. Investitsiya bo‘yicha qat‘iy maslahat berma, faqat ma‘lumot ber.`,s:"Oylik daromadim 8 mln so‘m, byudjet tuz"},
+          {n:"Ma‘lumot tahlili",d:"Jadval, hisobot, grafik tanlash",e:"📊",p:`Jadval va raqamlarni tahlil qil, hisobot tuz, qaysi grafik mosligini ayt.`,s:"Oylik savdo raqamlarimni tahlil qilib ber"},
+          {n:"Kontent",d:"Post, reklama matni, g‘oyalar",e:"✨",p:`Post, reklama matni, sarlavha, skript va g‘oyalar yoz; auditoriya va platformaga moslashtir.`,s:"Kofe do‘koni uchun Instagram post yoz"},
+          {n:"O‘rganish",d:"Tushuntirish, dars rejasi, test",e:"🎓",p:`Mavzuni sodda tushuntir, misol keltir, dars rejasi va test savollari tuz.`,s:"Inflyatsiya nima? Oddiy misol bilan tushuntir"}
+          ];
+          const BASE=`Sen — shaxsiy AI agentsan (biznes, savdo, o‘qish va kontent bo‘yicha). O‘zbek tilida (lotin yozuvida) javob ber; foydalanuvchi boshqa tilda yozsa, shu tilda. Qisqa, aniq, do‘stona bo‘l, javobni natijadan boshla. Javob telefon ekranida o‘qiladi, shuning uchun ixcha yoz. Noaniq bo‘lsa, bitta aniqlashtiruvchi savol ber. Bilmasangiz, ochiq ayt, ma‘lumot to‘qima. Budilnik qo‘ya olasan: foydalanuvchi budilnik so‘rasa, javobingga alohida qatorda [[ALARM:SS:DD|yozuv|kunlar]] yoz (SS:DD — 24 soatlik vaqt; kunlar ixtiyoriy, 1=yakshanba … 7=shanba, vergul bilan, bir martalik bo‘lsa bo‘sh). Masalan: [[ALARM:06:30|Mashq|2,3,4,5,6]]. Vaqt aniq bo‘lmasa, avval so‘ra. Internet, kalendar yoki xabar yuborishga ulanmagansan; bunday so‘ralsa, tayyor qoralama yoki reja ber. Vazifa oxirida keyingi qadamni bir jumlada taklif qil.`;
+          const $=s=>document.querySelector(s);
+          const feed=$("#feed"),chat=$("#chat"),inp=$("#inp"),go=$("#go");
+          let zone=null,hist=[],busy=false;
+
+          const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+          const fmt=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`\n]+)`/g,"<code>$1</code>").replace(/^#{1,4}\s*(.+)$/gm,"<b>$1</b>");
+          const down=()=>{feed.scrollTop=feed.scrollHeight};
+          const instr=()=>zone
+            ? BASE+"\n\nHozirgi ish zonasi: "+zone.n+". Ko‘rsatma: "+zone.p
+            : BASE+"\n\nIsh zonalari:\n"+Z.map(z=>"- "+z.n+": "+z.p).join("\n")+"\nSavolga mos zonani o‘zing aniqla va so‘rab o‘tirma.";
+
+          Z.forEach((z,i)=>{
+            const b=document.createElement("button");
+            b.className="row";
+            b.innerHTML="<i>"+z.e+"</i><div><b>"+esc(z.n)+"</b><span>"+esc(z.d)+"</span></div>";
+            b.onclick=()=>openZone(i);
+            $("#zones").append(b);
+          });
+
+          function show(inChat){
+            $("#home").hidden=inChat;chat.hidden=!inChat;$("#back").hidden=!inChat;
+            $("#sub").textContent=inChat?(zone?zone.n:"Avto zona"):"10 ta ish zonasi";
+          }
+          function reset(){
+            zone=null;hist=[];chat.innerHTML="";show(false);feed.scrollTop=0;
+          }
+          function openZone(i){
+            zone=Z[i];hist=[];chat.innerHTML="";show(true);
+            const d=document.createElement("div");d.className="intro";
+            d.innerHTML="<b>"+zone.e+" "+esc(zone.n)+"</b><p>"+esc(zone.d)+"</p>";
+            const c=document.createElement("button");c.className="chip";c.textContent=zone.s;
+            c.onclick=()=>{inp.value=zone.s;inp.focus();size()};
+            d.append(c);chat.append(d);inp.focus();
+          }
+          function add(cls,html){
+            const m=document.createElement("div");m.className="msg "+cls;m.innerHTML=html;chat.append(m);down();return m;
+          }
+
+          async function send(){
+            const text=inp.value.trim();
+            if(!text||busy)return;
+            inp.value="";size();
+            if(chat.hidden)show(true);
+            chat.querySelector(".intro")?.remove();
+            add("u",esc(text));
+            hist.push({role:"user",content:text});
+            const b=add("a wait","Yozmoqda…");
+            busy=true;go.disabled=true;
+            try{
+              const raw=await ask(instr(),hist);
+              b.classList.remove("wait");b.innerHTML=fmt(handleAlarm(raw));
+              hist.push({role:"assistant",content:raw});
+            }catch(e){
+              hist.pop();
+              b.classList.add("wait");
+              const m=String(e&&e.message);
+              b.textContent=m.includes("NOKEY")?"Avval 🔑 tugmasidan API kalitni kiriting.":m.includes("401")?"API kalit noto‘g‘ri. 🔑 tugmasidan yangilang.":m.includes("429")?"So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring.":"Xatolik. Internetni tekshirib, qayta urinib ko‘ring.";
+            }
+            busy=false;go.disabled=false;down();
+          }
+          function size(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,140)+"px"}
+          const pending={};
+          window.onAnswer=(id,ok,t)=>{const p=pending[id];delete pending[id];if(p)ok?p.res(t):p.rej(new Error(t))};
+          function ask(system,turns){return new Promise((res,rej)=>{
+            if(!Android.hasKey())return rej(new Error("NOKEY"));
+            const id=String(Date.now());pending[id]={res,rej};
+            Android.ask(id,system,JSON.stringify(turns));
+          })}
+          function handleAlarm(t){
+            let note="";
+            t=t.replace(/\[\[ALARM:(\d{1,2}):(\d{2})\|([^|\]]*)\|?([\d,]*)\]\]/g,(a,h,m,l,d)=>{
+              const ok=Android.setAlarm(+h,+m,l||"Yordamchi",d||"");
+              note+="\n"+(ok?"⏰ Budilnik qo‘yildi: "+h.padStart(2,"0")+":"+m:"Budilnik qo‘yilmadi: "+h+":"+m);return"";
+            });
+            return t.trim()+note;
+          }
+          const kb=$("#keybox");kb.hidden=Android.hasKey();
+          $("#keyb").onclick=()=>{kb.hidden=!kb.hidden};
+          $("#ksave").onclick=()=>{const v=$("#kin").value.trim();if(v.length>20){Android.saveKey(v);$("#kin").value="";kb.hidden=true}};
+          inp.addEventListener("input",size);
+          inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}});
+          go.onclick=send;
+          $("#back").onclick=reset;
+          </script>
+          </body>
+          </html>
+          __EOF__
+          mkdir -p 'Yordamchi/app/src/main/java/uz/yordamchi'
+          cat > 'Yordamchi/app/src/main/java/uz/yordamchi/MainActivity.kt' <<'__EOF__'
+          package uz.yordamchi
+
+          import android.annotation.SuppressLint
+          import android.app.Activity
+          import android.content.Intent
+          import android.os.Bundle
+          import android.provider.AlarmClock
+          import android.webkit.JavascriptInterface
+          import android.webkit.WebChromeClient
+          import android.webkit.WebView
+          import org.json.JSONArray
+          import org.json.JSONObject
+          import java.net.HttpURLConnection
+          import java.net.URL
+
+          // Model nomini shu yerda almashtirish mumkin
+          private const val MODEL = "claude-sonnet-5-5"
+
+          class MainActivity : Activity() {
+              private lateinit var web: WebView
+              private val prefs by lazy { getSharedPreferences("yordamchi", MODE_PRIVATE) }
+
+              @SuppressLint("SetJavaScriptEnabled")
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  web = WebView(this)
+                  web.settings.javaScriptEnabled = true
+                  web.settings.domStorageEnabled = true
+                  web.webChromeClient = WebChromeClient()
+                  web.addJavascriptInterface(Bridge(), "Android")
+                  web.loadUrl("file:///android_asset/index.html")
+                  setContentView(web)
+              }
+
+              @Deprecated("Deprecated in Java")
+              override fun onBackPressed() {
+                  val js = "(()=>{const b=document.getElementById('back');if(b&&!b.hidden){b.click();return 1}return 0})()"
+                  web.evaluateJavascript(js) { r -> if (r != "1") finish() }
+              }
+
+              inner class Bridge {
+                  @JavascriptInterface
+                  fun hasKey(): Boolean = !prefs.getString("key", "").isNullOrEmpty()
+
+                  @JavascriptInterface
+                  fun saveKey(k: String) {
+                      prefs.edit().putString("key", k.trim()).apply()
+                  }
+
+                  // days: "2,3,4" (1=yakshanba ... 7=shanba), bo'sh bo'lsa bir martalik
+                  @JavascriptInterface
+                  fun setAlarm(h: Int, m: Int, label: String, days: String): Boolean {
+                      if (h !in 0..23 || m !in 0..59) return false
+                      return try {
+                          val i = Intent(AlarmClock.ACTION_SET_ALARM)
+                              .putExtra(AlarmClock.EXTRA_HOUR, h)
+                              .putExtra(AlarmClock.EXTRA_MINUTES, m)
+                              .putExtra(AlarmClock.EXTRA_MESSAGE, label)
+                              .putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+                              .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                          val d = days.split(",").mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }
+                          if (d.isNotEmpty()) i.putExtra(AlarmClock.EXTRA_DAYS, ArrayList(d))
+                          startActivity(i)
+                          true
+                      } catch (e: Exception) {
+                          false
+                      }
+                  }
+
+                  @JavascriptInterface
+                  fun ask(id: String, system: String, turns: String) {
+                      Thread {
+                          var ok = false
+                          val out = try {
+                              val body = JSONObject()
+                                  .put("model", MODEL)
+                                  .put("max_tokens", 1500)
+                                  .put("system", system)
+                                  .put("messages", JSONArray(turns))
+                              val c = URL("https://api.anthropic.com/v1/messages").openConnection() as HttpURLConnection
+                              c.requestMethod = "POST"
+                              c.doOutput = true
+                              c.connectTimeout = 15000
+                              c.readTimeout = 90000
+                              c.setRequestProperty("content-type", "application/json")
+                              c.setRequestProperty("x-api-key", prefs.getString("key", "") ?: "")
+                              c.setRequestProperty("anthropic-version", "2023-06-01")
+                              c.outputStream.use { it.write(body.toString().toByteArray()) }
+                              val code = c.responseCode
+                              val s = (if (code < 400) c.inputStream else c.errorStream).bufferedReader().readText()
+                              if (code >= 400) {
+                                  "HTTP $code"
+                              } else {
+                                  ok = true
+                                  val arr = JSONObject(s).getJSONArray("content")
+                                  (0 until arr.length()).map { arr.getJSONObject(it) }
+                                      .filter { it.optString("type") == "text" }
+                                      .joinToString("") { it.getString("text") }
+                              }
+                          } catch (e: Exception) {
+                              "NET"
+                          }
+                          runOnUiThread {
+                              web.evaluateJavascript("onAnswer(${JSONObject.quote(id)},$ok,${JSONObject.quote(out)})", null)
+                          }
+                      }.start()
+                  }
+              }
+          }
+          __EOF__
+          mkdir -p 'Yordamchi/gradle/wrapper'
+          cat > 'Yordamchi/gradle/wrapper/gradle-wrapper.properties' <<'__EOF__'
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.9-bin.zip
+          __EOF__
+      - name: Build debug APK
+        working-directory: Yordamchi
+        run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Yordamchi-APK
+          path: Yordamchi/app/build/outputs/apk/debug/app-debug.apk
