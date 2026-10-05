@@ -150,7 +150,7 @@ jobs:
               <button id="keyb" aria-label="API kalit" style="margin-left:auto">🔑</button>
             </header>
             <div class="strip"></div>
-            <div id="keybox" class="kb" hidden><input id="kin" type="password" placeholder="Anthropic API kalit (sk-ant-…)" autocomplete="off"><button id="ksave">Saqlash</button></div>
+            <div id="keybox" class="kb" hidden><input id="kin" type="password" placeholder="Gemini API kalit (AIza…)" autocomplete="off"><button id="ksave">Saqlash</button></div>
             <main id="feed">
               <section id="home">
                 <p class="hi">Salom! Bugun nimani hal qilamiz?</p>
@@ -236,7 +236,7 @@ jobs:
               hist.pop();
               b.classList.add("wait");
               const m=String(e&&e.message);
-              b.textContent=m.includes("NOKEY")?"Avval 🔑 tugmasidan API kalitni kiriting.":m.includes("401")?"API kalit noto‘g‘ri. 🔑 tugmasidan yangilang.":m.includes("429")?"So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring.":"Xatolik. Internetni tekshirib, qayta urinib ko‘ring.";
+              b.textContent=m.includes("NOKEY")?"Avval 🔑 tugmasidan API kalitni kiriting.":/HTTP (400|401|403)/.test(m)?"API kalit noto‘g‘ri. 🔑 tugmasidan yangilang.":m.includes("EMPTY")?"Javob bo‘sh keldi. Savolni boshqacha yozib ko‘ring.":m.includes("429")?"So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring.":"Xatolik. Internetni tekshirib, qayta urinib ko‘ring.";
             }
             busy=false;go.disabled=false;down();
           }
@@ -284,8 +284,8 @@ jobs:
           import java.net.HttpURLConnection
           import java.net.URL
 
-          // Model nomini shu yerda almashtirish mumkin
-          private const val MODEL = "claude-sonnet-5-5"
+          // Bepul Gemini modellari: birinchisi ishlamasa (404/429/503), keyingisi sinaladi
+          private val MODELS = listOf("gemini-flash-latest", "gemini-3-flash-preview", "gemini-2.5-flash")
 
           class MainActivity : Activity() {
               private lateinit var web: WebView
@@ -342,34 +342,53 @@ jobs:
                   fun ask(id: String, system: String, turns: String) {
                       Thread {
                           var ok = false
-                          val out = try {
+                          var out = "NET"
+                          try {
+                              val src = JSONArray(turns)
+                              val contents = JSONArray()
+                              for (n in 0 until src.length()) {
+                                  val t = src.getJSONObject(n)
+                                  val role = if (t.getString("role") == "assistant") "model" else "user"
+                                  contents.put(
+                                      JSONObject().put("role", role).put(
+                                          "parts", JSONArray().put(JSONObject().put("text", t.getString("content")))
+                                      )
+                                  )
+                              }
                               val body = JSONObject()
-                                  .put("model", MODEL)
-                                  .put("max_tokens", 1500)
-                                  .put("system", system)
-                                  .put("messages", JSONArray(turns))
-                              val c = URL("https://api.anthropic.com/v1/messages").openConnection() as HttpURLConnection
-                              c.requestMethod = "POST"
-                              c.doOutput = true
-                              c.connectTimeout = 15000
-                              c.readTimeout = 90000
-                              c.setRequestProperty("content-type", "application/json")
-                              c.setRequestProperty("x-api-key", prefs.getString("key", "") ?: "")
-                              c.setRequestProperty("anthropic-version", "2023-06-01")
-                              c.outputStream.use { it.write(body.toString().toByteArray()) }
-                              val code = c.responseCode
-                              val s = (if (code < 400) c.inputStream else c.errorStream).bufferedReader().readText()
-                              if (code >= 400) {
-                                  "HTTP $code"
-                              } else {
-                                  ok = true
-                                  val arr = JSONObject(s).getJSONArray("content")
-                                  (0 until arr.length()).map { arr.getJSONObject(it) }
-                                      .filter { it.optString("type") == "text" }
-                                      .joinToString("") { it.getString("text") }
+                                  .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", system))))
+                                  .put("contents", contents)
+                                  .put("generationConfig", JSONObject().put("maxOutputTokens", 2048))
+                                  .toString().toByteArray()
+                              val key = prefs.getString("key", "") ?: ""
+                              for (m in MODELS) {
+                                  val c = URL("https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent")
+                                      .openConnection() as HttpURLConnection
+                                  c.requestMethod = "POST"
+                                  c.doOutput = true
+                                  c.connectTimeout = 15000
+                                  c.readTimeout = 90000
+                                  c.setRequestProperty("content-type", "application/json")
+                                  c.setRequestProperty("x-goog-api-key", key)
+                                  c.outputStream.use { it.write(body) }
+                                  val code = c.responseCode
+                                  val s = (if (code < 400) c.inputStream else c.errorStream).bufferedReader().readText()
+                                  if (code in 200..299) {
+                                      val parts = JSONObject(s).optJSONArray("candidates")?.optJSONObject(0)
+                                          ?.optJSONObject("content")?.optJSONArray("parts")
+                                      val text = if (parts == null) "" else (0 until parts.length())
+                                          .map { parts.getJSONObject(it) }
+                                          .filter { !it.optBoolean("thought") }
+                                          .joinToString("") { it.optString("text") }
+                                      ok = text.isNotEmpty()
+                                      out = if (ok) text else "EMPTY"
+                                      break
+                                  }
+                                  out = "HTTP $code"
+                                  if (code != 404 && code != 429 && code != 503) break
                               }
                           } catch (e: Exception) {
-                              "NET"
+                              out = "NET"
                           }
                           runOnUiThread {
                               web.evaluateJavascript("onAnswer(${JSONObject.quote(id)},$ok,${JSONObject.quote(out)})", null)
