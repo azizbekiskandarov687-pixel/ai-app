@@ -67,6 +67,7 @@ jobs:
                   <activity
                       android:name=".MainActivity"
                       android:exported="true"
+                      android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode"
                       android:windowSoftInputMode="adjustResize">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -76,421 +77,631 @@ jobs:
               </application>
           </manifest>
           __EOF__
-          mkdir -p 'Yordamchi/app/src/main/assets'
-          cat > 'Yordamchi/app/src/main/assets/index.html' <<'__EOF__'
-          <!doctype html>
-          <html lang="uz">
-          <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-          <title>Yordamchi — shaxsiy AI agent</title>
-          <link rel="preconnect" href="https://fonts.googleapis.com">
-          <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet">
-          <style>
-          :root{--bg:#e6eefa;--sf:rgba(255,255,255,.55);--ink:#0f1f33;--mut:#566a82;--ln:rgba(15,31,51,.12);--pri:#2f6bff;--onp:#fff;--acc:#ff9f43;--ub:rgba(47,107,255,.88);--uk:#fff;--glass:rgba(255,255,255,.42);--edge:rgba(255,255,255,.75);--ov:rgba(230,238,250,.82);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-          *{box-sizing:border-box}
-          html{scroll-padding-top:env(safe-area-inset-top,0px)}
-          html,body{height:100%;margin:0}
-          body{background:var(--bg);color:var(--ink);font:16px/1.5 Onest,system-ui,-apple-system,"Segoe UI",sans-serif}
-          #app{height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
-          header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
-          header h1{font-size:20px;line-height:1.2;margin:0;font-weight:700}
-          header small{display:block;color:var(--mut);font-size:13px}
-          .strip{height:5px;margin:0 16px;background:repeating-linear-gradient(90deg,var(--pri) 0 14px,var(--acc) 14px 18px,transparent 18px 22px)}
-          #back,#keyb{width:36px;height:36px;border-radius:50%;border:1px solid var(--ln);background:var(--sf);color:var(--ink);font-size:20px;cursor:pointer}
-          main{flex:1;overflow-y:auto;padding:6px 16px 12px}
-          .hi{margin:14px 0 6px;font-size:22px;font-weight:700;line-height:1.25}
-          .hint{color:var(--mut);font-size:14px;margin:0 0 8px}
-          .row{display:flex;gap:14px;align-items:center;width:100%;padding:12px 2px;background:none;border:0;border-bottom:1px solid var(--ln);color:inherit;font:inherit;text-align:left;cursor:pointer}
-          .row i{font-style:normal;font-size:24px;width:34px;text-align:center}
-          .row b{display:block;font-weight:700;line-height:1.3}
-          .row span{color:var(--mut);font-size:14px}
-          .msg{margin:14px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-          .u{margin-left:auto;width:fit-content;max-width:86%;background:var(--ub);color:var(--uk);padding:10px 14px;border-radius:18px 18px 4px 18px}
-          .wait{color:var(--mut)}
-          code{background:var(--sf);border:1px solid var(--ln);border-radius:4px;padding:0 4px;font-size:.92em}
-          .intro{margin:14px 0}
-          .intro b{font-size:18px}
-          .intro p{margin:2px 0 12px;color:var(--mut)}
-          .chip{display:inline-block;padding:9px 14px;border:1px solid var(--pri);color:var(--pri);background:none;border-radius:999px;font:inherit;font-size:14px;cursor:pointer;text-align:left}
-          footer{padding:10px 16px 12px;border-top:1px solid var(--ln);background:var(--bg)}
-          .cmp{display:flex;gap:8px;align-items:flex-end}
-          textarea{flex:1;resize:none;max-height:140px;min-height:44px;padding:10px 14px;border:1px solid var(--ln);border-radius:22px;background:var(--sf);color:var(--ink);font:inherit}
-          #go{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:var(--pri);color:var(--onp);font-size:20px;cursor:pointer}
-          #go:disabled{opacity:.5}
-          button:focus-visible,textarea:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
-          .kb{display:flex;gap:8px;padding:10px 16px}.kb input{flex:1;min-width:0;padding:10px 14px;border:1px solid var(--ln);border-radius:22px;background:var(--sf);color:var(--ink);font:inherit}.kb button{border:0;border-radius:22px;padding:0 16px;background:var(--pri);color:var(--onp);font:inherit;cursor:pointer}
-          [hidden]{display:none!important}
-
-
-          :root[data-theme="dark"]{--bg:#090e1a;--sf:rgba(255,255,255,.08);--ink:#eaf1fb;--mut:#9fb2cb;--ln:rgba(255,255,255,.12);--pri:#78afff;--onp:#041126;--ub:rgba(84,130,255,.55);--uk:#fff;--glass:rgba(255,255,255,.08);--edge:rgba(255,255,255,.2);--ov:rgba(9,14,26,.8)}
-          @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090e1a;--sf:rgba(255,255,255,.08);--ink:#eaf1fb;--mut:#9fb2cb;--ln:rgba(255,255,255,.12);--pri:#78afff;--onp:#041126;--ub:rgba(84,130,255,.55);--uk:#fff;--glass:rgba(255,255,255,.08);--edge:rgba(255,255,255,.2);--ov:rgba(9,14,26,.8)}}
-          body{background:radial-gradient(55% 35% at 12% 8%,rgba(110,150,255,.55),transparent 70%),radial-gradient(50% 35% at 95% 32%,rgba(255,140,200,.4),transparent 70%),radial-gradient(60% 45% at 25% 98%,rgba(80,230,190,.4),transparent 70%),var(--bg);background-attachment:fixed}
-          header,.row,.msg.a,.u,.chip,.kb,.hrow,#hp .top,textarea,#back,#keyb,.ib,#mic{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);border:1px solid var(--edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 24px rgba(0,0,0,.10)}
-          .strip{display:none}
-          header{margin:10px 12px 0;padding:10px 12px;border-radius:26px}
-          .tools{margin-left:auto;display:flex;gap:6px}
-          #back,#keyb,.ib,#mic{width:40px;height:40px;border-radius:50%;font-size:18px;color:var(--ink);cursor:pointer;padding:0;flex:none}
-          main{padding:12px}
-          .row{border-radius:22px;padding:12px 14px;margin:0 0 10px}
-          .row b{color:var(--ink)}
-          .row::after{content:"›";margin-left:auto;font-size:28px;color:var(--mut)}
-          .msg.a{padding:12px 14px;border-radius:20px 20px 20px 6px;max-width:94%}
-          .u{background:var(--ub);color:var(--uk);border-radius:20px 20px 6px 20px}
-          img.gen{display:block;max-width:100%;min-height:120px;border-radius:16px;margin-top:10px;background:var(--glass)}
-          footer{border:0;background:transparent;padding:6px 12px 12px}
-          #go{background:var(--pri);color:var(--onp);box-shadow:0 6px 18px rgba(47,107,255,.35)}
-          textarea{border-radius:22px}
-          .kb{margin:8px 12px 0;border-radius:20px}
-          .kb input{background:transparent;border:0;outline:0;color:var(--ink)}
-          #hp{position:fixed;inset:0;z-index:5;max-width:640px;margin:0 auto;overflow:auto;background:var(--ov);-webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px}
-          #hp .top{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:24px;margin-bottom:12px}
-          #hp .top b{flex:1;font-size:18px}
-          #hp .top button:not(.ib){background:var(--pri);color:var(--onp);border:0;border-radius:18px;padding:9px 14px;font:inherit;cursor:pointer}
-          .hrow{display:flex;align-items:center;margin-bottom:8px;border-radius:18px}
-          .hrow .o{flex:1;min-width:0;text-align:left;background:none;border:0;color:var(--ink);font:inherit;padding:12px 14px;cursor:pointer}
-          .hrow .o b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-          .hrow small{color:var(--mut)}
-          .hrow .x{background:none;border:0;font-size:18px;padding:12px 14px;cursor:pointer}
-          </style>
-          </head>
-          <body>
-          <div id="app">
-            <header>
-              <button id="back" aria-label="Orqaga" hidden>‹</button>
-              <div><h1>Yordamchi</h1><small id="sub">10 ta ish zonasi</small></div>
-              <span class="tools"><button id="hist" class="ib" aria-label="Tarix">🕘</button><button id="thm" class="ib" aria-label="Mavzu">🌓</button><button id="keyb" aria-label="API kalit">🔑</button></span>
-            </header>
-            <div class="strip"></div>
-            <div id="keybox" class="kb" hidden><input id="kin" type="password" placeholder="Gemini API kalit (AIza…)" autocomplete="off"><button id="ksave">Saqlash</button></div>
-            <main id="feed">
-              <section id="home">
-                <p class="hi">Salom! Bugun nimani hal qilamiz?</p>
-                <p class="hint">Zonani tanlang yoki pastga yozing. Zonani agent o‘zi aniqlaydi. Reja, qoralama, tahlil, tarjima — va budilnik ham qo‘yadi.</p>
-                <div id="zones"></div>
-              </section>
-              <section id="chat" hidden></section>
-            </main>
-            <footer>
-              <div class="cmp">
-                <textarea id="inp" rows="1" placeholder="Xabar yozing…"></textarea>
-                <button id="mic" aria-label="Ovoz bilan yozish">🎤</button><button id="go" aria-label="Yuborish">↑</button>
-              </div>
-            </footer>
-          </div>
-          <div id="hp" hidden></div>
-          <script>
-          const Z=[
-          {n:"Vazifalar va reja",d:"Kunlik va haftalik reja, ustuvorliklar",e:"📋",p:`Vazifalarni shoshilinch va muhimlik bo‘yicha tartibla, kunlik va haftalik reja tuz, katta ishni kichik qadamlarga bo‘l.`,s:"Ertangi 5 ta vazifamni muhimlik bo‘yicha tartibla"},
-          {n:"Kalendar",d:"Uchrashuv, eslatma, vaqt taqsimoti",e:"🗓",p:`Uchrashuv va eslatmalarni tartibla, vaqt to‘qnashuvini ko‘rsat, bo‘sh vaqt taklif qil.`,s:"Haftam uchun uchrashuvlar jadvalini tuz"},
-          {n:"Xat va xabarlar",d:"Email, Telegram, rasmiy xat",e:"✉️",p:`Email, Telegram va rasmiy xatlarni yoz. Ohangni moslashtir (rasmiy, do‘stona, qat‘iy). Yuborishni foydalanuvchining o‘ziga qoldir.`,s:"Mijozga to‘lov kechikkani haqida muloyim xat yoz"},
-          {n:"Hujjatlar",d:"Yozish, tahrir, qisqa xulosa",e:"📄",p:`Matn yoz, tahrirla, xatolarini tuzat, uzun matndan qisqa xulosa chiqar.`,s:"Shu matnni tahrirla va qisqartir:"},
-          {n:"Tadqiqot",d:"Ma‘lumot yig‘ish, taqqoslash",e:"🔎",p:`Mavzuni tahlil qil, variantlarni taqqosla, ishonchsiz joyini belgila. Internetdan qidira olmaysan: bilganing asosida javob ber va yangilanishi mumkin bo‘lgan joyni ayt.`,s:"Onlayn do‘kon ochish uchun 3 ta platformani taqqosla"},
-          {n:"Tarjima",d:"O‘zbek, rus, ingliz tillari",e:"🌐",p:`O‘zbek, rus va ingliz tillari orasida tarjima qil, ma‘no va ohangni saqla.`,s:"Ruscha va inglizchaga tarjima qil: Buyurtmangiz tayyor"},
-          {n:"Moliya",d:"Byudjet, xarajat, foyda",e:"💰",p:`Byudjet tuz, xarajat va foydani hisobla. Investitsiya bo‘yicha qat‘iy maslahat berma, faqat ma‘lumot ber.`,s:"Oylik daromadim 8 mln so‘m, byudjet tuz"},
-          {n:"Ma‘lumot tahlili",d:"Jadval, hisobot, grafik tanlash",e:"📊",p:`Jadval va raqamlarni tahlil qil, hisobot tuz, qaysi grafik mosligini ayt.`,s:"Oylik savdo raqamlarimni tahlil qilib ber"},
-          {n:"Kontent",d:"Post, reklama matni, g‘oyalar",e:"✨",p:`Post, reklama matni, sarlavha, skript va g‘oyalar yoz; auditoriya va platformaga moslashtir.`,s:"Kofe do‘koni uchun Instagram post yoz"},
-          {n:"O‘rganish",d:"Tushuntirish, dars rejasi, test",e:"🎓",p:`Mavzuni sodda tushuntir, misol keltir, dars rejasi va test savollari tuz.`,s:"Inflyatsiya nima? Oddiy misol bilan tushuntir"}
-          ];
-          const BASE=`Sen — shaxsiy AI agentsan (biznes, savdo, o‘qish va kontent bo‘yicha). O‘zbek tilida (lotin yozuvida) javob ber; foydalanuvchi boshqa tilda yozsa, shu tilda. Qisqa, aniq, do‘stona bo‘l, javobni natijadan boshla. Javob telefon ekranida o‘qiladi, shuning uchun ixcha yoz. Noaniq bo‘lsa, bitta aniqlashtiruvchi savol ber. Bilmasangiz, ochiq ayt, ma‘lumot to‘qima. Budilnik qo‘ya olasan: foydalanuvchi budilnik so‘rasa, javobingga alohida qatorda [[ALARM:SS:DD|yozuv|kunlar]] yoz (SS:DD — 24 soatlik vaqt; kunlar ixtiyoriy, 1=yakshanba … 7=shanba, vergul bilan, bir martalik bo‘lsa bo‘sh). Masalan: [[ALARM:06:30|Mashq|2,3,4,5,6]]. Vaqt aniq bo‘lmasa, avval so‘ra. Rasm so‘ralsa (rasm, surat, logo, illyustratsiya), javobing oxirida alohida qatorda [[IMG:ingliz tilidagi batafsil tasvir]] yoz va rasm tayyorlanayotganini bir jumlada ayt. Video yarata olmaysan: so‘ralsa, ochiq ayt va ssenariy yoki kadrlar rejasini taklif qil. Internet, kalendar yoki xabar yuborishga ulanmagansan; bunday so‘ralsa, tayyor qoralama yoki reja ber. Vazifa oxirida keyingi qadamni bir jumlada taklif qil.`;
-          const $=s=>document.querySelector(s);
-          const feed=$("#feed"),chat=$("#chat"),inp=$("#inp"),go=$("#go");
-          let zone=null,hist=[],busy=false;
-
-          const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-          const fmt=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`\n]+)`/g,"<code>$1</code>").replace(/^#{1,4}\s*(.+)$/gm,"<b>$1</b>");
-          const down=()=>{feed.scrollTop=feed.scrollHeight};
-          const instr=()=>zone
-            ? BASE+"\n\nHozirgi ish zonasi: "+zone.n+". Ko‘rsatma: "+zone.p
-            : BASE+"\n\nIsh zonalari:\n"+Z.map(z=>"- "+z.n+": "+z.p).join("\n")+"\nSavolga mos zonani o‘zing aniqla va so‘rab o‘tirma.";
-
-          Z.forEach((z,i)=>{
-            const b=document.createElement("button");
-            b.className="row";
-            b.innerHTML="<i>"+z.e+"</i><div><b>"+esc(z.n)+"</b><span>"+esc(z.d)+"</span></div>";
-            b.onclick=()=>openZone(i);
-            $("#zones").append(b);
-          });
-
-          function show(inChat){
-            $("#home").hidden=inChat;chat.hidden=!inChat;$("#back").hidden=!inChat;
-            $("#sub").textContent=inChat?(zone?zone.n:"Avto zona"):"10 ta ish zonasi";
-          }
-          function reset(){
-            zone=null;hist=[];cid=null;chat.innerHTML="";show(false);feed.scrollTop=0;
-          }
-          function openZone(i){
-            zone=Z[i];hist=[];cid=null;chat.innerHTML="";show(true);
-            const d=document.createElement("div");d.className="intro";
-            d.innerHTML="<b>"+zone.e+" "+esc(zone.n)+"</b><p>"+esc(zone.d)+"</p>";
-            const c=document.createElement("button");c.className="chip";c.textContent=zone.s;
-            c.onclick=()=>{inp.value=zone.s;inp.focus();size()};
-            d.append(c);chat.append(d);inp.focus();
-          }
-          function add(cls,html){
-            const m=document.createElement("div");m.className="msg "+cls;m.innerHTML=html;chat.append(m);down();return m;
-          }
-
-          async function send(){
-            const text=inp.value.trim();
-            if(!text||busy)return;
-            inp.value="";size();
-            if(chat.hidden)show(true);
-            chat.querySelector(".intro")?.remove();
-            add("u",esc(text));
-            hist.push({role:"user",content:text});if(!cid)cid=String(Date.now());
-            const b=add("a wait","Yozmoqda…");
-            busy=true;go.disabled=true;
-            try{
-              const raw=await ask(instr(),hist);
-              b.classList.remove("wait");view(b,raw);alarmNote(raw,b);
-              hist.push({role:"assistant",content:raw});save();
-            }catch(e){
-              hist.pop();
-              b.classList.add("wait");
-              const m=String(e&&e.message);
-              b.textContent=m.includes("NOKEY")?"Avval 🔑 tugmasidan API kalitni kiriting.":/HTTP (400|401|403)/.test(m)?"API kalit noto‘g‘ri. 🔑 tugmasidan yangilang.":m.includes("EMPTY")?"Javob bo‘sh keldi. Savolni boshqacha yozib ko‘ring.":m.includes("429")?"So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring.":"Xatolik. Internetni tekshirib, qayta urinib ko‘ring.";
-            }
-            busy=false;go.disabled=false;down();
-          }
-          function size(){inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,140)+"px"}
-          const pending={};
-          window.onAnswer=(id,ok,t)=>{const p=pending[id];delete pending[id];if(p)ok?p.res(t):p.rej(new Error(t))};
-          function ask(system,turns){return new Promise((res,rej)=>{
-            if(!Android.hasKey())return rej(new Error("NOKEY"));
-            const id=String(Date.now());pending[id]={res,rej};
-            Android.ask(id,system,JSON.stringify(turns));
-          })}
-          function handleAlarm(t){
-            let note="";
-            t=t.replace(/\[\[ALARM:(\d{1,2}):(\d{2})\|([^|\]]*)\|?([\d,]*)\]\]/g,(a,h,m,l,d)=>{
-              const ok=Android.setAlarm(+h,+m,l||"Yordamchi",d||"");
-              note+="\n"+(ok?"⏰ Budilnik qo‘yildi: "+h.padStart(2,"0")+":"+m:"Budilnik qo‘yilmadi: "+h+":"+m);return"";
-            });
-            return t.trim()+note;
-          }
-          const kb=$("#keybox");kb.hidden=Android.hasKey();
-          $("#keyb").onclick=()=>{kb.hidden=!kb.hidden};
-          $("#ksave").onclick=()=>{const v=$("#kin").value.trim();if(v.length>20){Android.saveKey(v);$("#kin").value="";kb.hidden=true}};
-          let cid=null;
-          const ALARM=/\[\[ALARM:(\d{1,2}):(\d{2})\|([^|\]]*)\|?([\d,]*)\]\]/g;
-          const IMG=/\[\[IMG:([^\]]+)\]\]/g;
-          const sd=s=>{let x=7;for(const c of s)x=(x*31+c.charCodeAt(0))>>>0;return x%100000};
-          function view(el,raw){
-            el.innerHTML=fmt(raw.replace(IMG,"").replace(ALARM,"").trim());
-            for(const m of raw.matchAll(IMG)){
-              const p=m[1].trim(),im=document.createElement("img");
-              im.className="gen";im.alt=p;
-              im.onerror=()=>{const s=document.createElement("div");s.className="wait";s.textContent="Rasm yuklanmadi. Bepul xizmat band, 15 soniyadan keyin qayta urinib ko‘ring.";im.replaceWith(s)};
-              im.src="https://image.pollinations.ai/prompt/"+encodeURIComponent(p)+"?width=768&height=768&nologo=true&seed="+sd(p);
-              el.append(im);
-            }
-          }
-          function alarmNote(raw,el){
-            let note="";
-            for(const m of raw.matchAll(ALARM)){
-              const ok=Android.setAlarm(+m[1],+m[2],m[3]||"Yordamchi",m[4]||"");
-              note+="\n"+(ok?"⏰ Budilnik qo‘yildi: "+m[1].padStart(2,"0")+":"+m[2]:"Budilnik qo‘yilmadi: "+m[1]+":"+m[2]);
-            }
-            if(note)el.append(document.createTextNode(note));
-          }
-          const load=()=>{try{return JSON.parse(localStorage.getItem("yh")||"[]")}catch(e){return[]}};
-          const store=a=>{try{localStorage.setItem("yh",JSON.stringify(a.slice(0,50)))}catch(e){}};
-          function save(){
-            if(!hist.length||!cid)return;
-            const a=load().filter(c=>c.id!==cid);
-            a.unshift({id:cid,z:zone?Z.indexOf(zone):-1,title:hist[0].content.slice(0,40),m:hist.slice(),t:Date.now()});
-            store(a);
-          }
-          function openChat(c){
-            zone=c.z>=0?Z[c.z]:null;hist=c.m.slice();cid=c.id;chat.innerHTML="";show(true);
-            hist.forEach(m=>{if(m.role==="user")add("u",esc(m.content));else view(add("a",""),m.content)});
-            $("#hp").hidden=true;down();
-          }
-          function hpOpen(){
-            const hp=$("#hp"),a=load();
-            hp.innerHTML='<div class="top"><b>Suhbatlar</b><button id="hn">＋ Yangi</button><button class="ib" id="hc" aria-label="Yopish">✕</button></div>';
-            if(!a.length)hp.insertAdjacentHTML("beforeend",'<p class="hint">Hali suhbat yo‘q.</p>');
-            a.forEach(c=>{
-              const r=document.createElement("div");r.className="hrow";
-              r.innerHTML='<button class="o"><b></b><small></small></button><button class="x" aria-label="O‘chirish">🗑</button>';
-              r.querySelector("b").textContent=c.title;
-              r.querySelector("small").textContent=(c.z>=0?Z[c.z].n:"Avto")+" · "+new Date(c.t).toLocaleDateString();
-              r.querySelector(".o").onclick=()=>openChat(c);
-              r.querySelector(".x").onclick=()=>{store(load().filter(x=>x.id!==c.id));hpOpen()};
-              hp.append(r);
-            });
-            $("#hn").onclick=()=>{hp.hidden=true;reset()};
-            $("#hc").onclick=()=>{hp.hidden=true};
-            hp.hidden=false;
-          }
-          $("#hist").onclick=hpOpen;
-          const R=document.documentElement,dm=matchMedia("(prefers-color-scheme:dark)");
-          try{const t=localStorage.getItem("th");if(t)R.dataset.theme=t}catch(e){}
-          $("#thm").onclick=()=>{const n=(R.dataset.theme||(dm.matches?"dark":"light"))==="dark"?"light":"dark";R.dataset.theme=n;try{localStorage.setItem("th",n)}catch(e){}};
-          $("#mic").onclick=()=>Android.listen();
-          window.onVoice=t=>{if(t){inp.value=(inp.value+" "+t).trim();size();inp.focus()}};
-          inp.addEventListener("input",size);
-          inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}});
-          go.onclick=send;
-          $("#back").onclick=reset;
-          </script>
-          </body>
-          </html>
-          __EOF__
           mkdir -p 'Yordamchi/app/src/main/java/uz/yordamchi'
           cat > 'Yordamchi/app/src/main/java/uz/yordamchi/MainActivity.kt' <<'__EOF__'
           package uz.yordamchi
 
-          import android.annotation.SuppressLint
           import android.app.Activity
+          import android.app.AlertDialog
+          import android.animation.ValueAnimator
+          import android.content.Context
           import android.content.Intent
+          import android.graphics.drawable.Drawable
+          import android.graphics.drawable.LayerDrawable
+          import android.view.animation.LinearInterpolator
+          import android.view.animation.OvershootInterpolator
+          import kotlin.math.cos
+          import kotlin.math.sin
+          import android.content.res.Configuration
+          import android.graphics.*
+          import android.graphics.drawable.GradientDrawable
+          import android.os.Build
           import android.os.Bundle
           import android.provider.AlarmClock
           import android.speech.RecognizerIntent
-          import android.webkit.JavascriptInterface
-          import android.webkit.WebChromeClient
-          import android.webkit.WebView
+          import android.text.Html
+          import android.text.TextUtils
+          import android.view.*
+          import android.widget.*
           import org.json.JSONArray
           import org.json.JSONObject
           import java.net.HttpURLConnection
           import java.net.URL
+          import java.net.URLEncoder
 
-          // Bepul Gemini modellari: birinchisi ishlamasa (404/429/503), keyingisi sinaladi
-          private val MODELS = listOf("gemini-flash-latest", "gemini-3-flash-preview", "gemini-2.5-flash")
+          class Zone(val e: String, val n: String, val d: String, val p: String, val s: String)
 
-          class MainActivity : Activity() {
-              private lateinit var web: WebView
-              private val prefs by lazy { getSharedPreferences("yordamchi", MODE_PRIVATE) }
+          // Shisha: gradient to‘ldirish, yorqin sinish chetlari va tepada yaltiroq nur
+          class Glass(private val r: Float, private val dark: Boolean, private val sw: Float, private val fillOn: Boolean = true) : Drawable() {
+              private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
+              private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = sw }
+              private val shine = Paint(Paint.ANTI_ALIAS_FLAG)
+              private val path = Path()
+              private fun w(a: Int) = Color.argb(a, 255, 255, 255)
 
-              @SuppressLint("SetJavaScriptEnabled")
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  web = WebView(this)
-                  web.settings.javaScriptEnabled = true
-                  web.settings.domStorageEnabled = true
-                  web.webChromeClient = WebChromeClient()
-                  web.addJavascriptInterface(Bridge(), "Android")
-                  web.loadUrl("file:///android_asset/index.html")
-                  setContentView(web)
+              override fun onBoundsChange(b: Rect) {
+                  val wd = b.width().toFloat()
+                  val ht = b.height().toFloat()
+                  path.reset()
+                  path.addRoundRect(RectF(sw / 2, sw / 2, wd - sw / 2, ht - sw / 2), r, r, Path.Direction.CW)
+                  fill.shader = LinearGradient(0f, 0f, 0f, ht, w(if (dark) 60 else 175), w(if (dark) 12 else 70), Shader.TileMode.CLAMP)
+                  edge.shader = LinearGradient(0f, 0f, wd, ht, intArrayOf(w(240), w(30), w(30), w(150)), floatArrayOf(0f, .35f, .65f, 1f), Shader.TileMode.CLAMP)
+                  shine.shader = LinearGradient(0f, 0f, 0f, ht * .5f, w(if (dark) 70 else 120), w(0), Shader.TileMode.CLAMP)
               }
 
-              @Deprecated("Deprecated in Java")
-              override fun onBackPressed() {
-                  val js = "(()=>{const b=document.getElementById('back');if(b&&!b.hidden){b.click();return 1}return 0})()"
-                  web.evaluateJavascript(js) { r -> if (r != "1") finish() }
+              override fun draw(c: Canvas) {
+                  if (fillOn) c.drawPath(path, fill)
+                  c.save()
+                  c.clipPath(path)
+                  c.drawRect(0f, 0f, bounds.width().toFloat(), bounds.height() * .5f, shine)
+                  c.restore()
+                  c.drawPath(path, edge)
+              }
+
+              override fun setAlpha(alpha: Int) {}
+              override fun setColorFilter(cf: ColorFilter?) {}
+              @Suppress("DEPRECATION")
+              override fun getOpacity() = PixelFormat.TRANSLUCENT
+          }
+
+          // Orqa fon: sekin siljiydigan rangli dog‘lar (shisha ular orqali yaltiraydi)
+          class BlobView(ctx: Context, var dark: Boolean) : View(ctx) {
+              private val p = Paint(Paint.ANTI_ALIAS_FLAG)
+              private var t = 0f
+              private val anim = ValueAnimator.ofFloat(0f, 6.2831855f).apply {
+                  duration = 28000
+                  repeatCount = ValueAnimator.INFINITE
+                  interpolator = LinearInterpolator()
+                  addUpdateListener { t = it.animatedValue as Float; invalidate() }
+              }
+
+              override fun onAttachedToWindow() { super.onAttachedToWindow(); anim.start() }
+              override fun onDetachedFromWindow() { anim.cancel(); super.onDetachedFromWindow() }
+
+              override fun onDraw(c: Canvas) {
+                  val w = width.toFloat()
+                  val h = height.toFloat()
+                  c.drawColor(Color.parseColor(if (dark) "#070B1E" else "#EAF0FF"))
+                  blob(c, w * (.2f + .14f * sin(t)), h * (.14f + .08f * cos(t)), w * .8f, if (dark) "#4C5CFF" else "#8FB0FF")
+                  blob(c, w * (.88f + .1f * cos(t + 1f)), h * (.38f + .1f * sin(t + 2f)), w * .75f, if (dark) "#E0309A" else "#FFA6D5")
+                  blob(c, w * (.28f + .12f * sin(t + 4f)), h * (.86f + .06f * cos(t + 3f)), w * .85f, if (dark) "#00C2A8" else "#9BF0D6")
+                  blob(c, w * (.75f + .1f * cos(t + 5f)), h * (.72f + .08f * sin(t + 1f)), w * .5f, if (dark) "#FF8A3D" else "#FFD29B")
+              }
+
+              private fun blob(c: Canvas, x: Float, y: Float, rad: Float, hex: String) {
+                  val col = Color.parseColor(hex)
+                  p.shader = RadialGradient(x, y, rad, Color.argb(210, Color.red(col), Color.green(col), Color.blue(col)),
+                      Color.argb(0, Color.red(col), Color.green(col), Color.blue(col)), Shader.TileMode.CLAMP)
+                  c.drawCircle(x, y, rad, p)
+              }
+          }
+
+          val ZONES = listOf(
+              Zone("📋", "Vazifalar va reja", "Kunlik va haftalik reja, ustuvorliklar", "Vazifalarni shoshilinch va muhimlik bo‘yicha tartibla, kunlik va haftalik reja tuz, katta ishni kichik qadamlarga bo‘l.", "Ertangi 5 ta vazifamni muhimlik bo‘yicha tartibla"),
+              Zone("🗓", "Kalendar", "Uchrashuv, eslatma, vaqt taqsimoti", "Uchrashuv va eslatmalarni tartibla, vaqt to‘qnashuvini ko‘rsat, bo‘sh vaqt taklif qil.", "Haftam uchun uchrashuvlar jadvalini tuz"),
+              Zone("✉️", "Xat va xabarlar", "Email, Telegram, rasmiy xat", "Email, Telegram va rasmiy xatlarni yoz. Ohangni moslashtir (rasmiy, do‘stona, qat‘iy). Yuborishni foydalanuvchining o‘ziga qoldir.", "Mijozga to‘lov kechikkani haqida muloyim xat yoz"),
+              Zone("📄", "Hujjatlar", "Yozish, tahrir, qisqa xulosa", "Matn yoz, tahrirla, xatolarini tuzat, uzun matndan qisqa xulosa chiqar.", "Shu matnni tahrirla va qisqartir:"),
+              Zone("🔎", "Tadqiqot", "Ma‘lumot yig‘ish, taqqoslash", "Mavzuni tahlil qil, variantlarni taqqosla, ishonchsiz joyini belgila. Internetdan qidira olmaysan: bilganing asosida javob ber va yangilanishi mumkin bo‘lgan joyni ayt.", "Onlayn do‘kon ochish uchun 3 ta platformani taqqosla"),
+              Zone("🌐", "Tarjima", "O‘zbek, rus, ingliz tillari", "O‘zbek, rus va ingliz tillari orasida tarjima qil, ma‘no va ohangni saqla.", "Ruscha va inglizchaga tarjima qil: Buyurtmangiz tayyor"),
+              Zone("💰", "Moliya", "Byudjet, xarajat, foyda", "Byudjet tuz, xarajat va foydani hisobla. Investitsiya bo‘yicha qat‘iy maslahat berma, faqat ma‘lumot ber.", "Oylik daromadim 8 mln so‘m, byudjet tuz"),
+              Zone("📊", "Ma‘lumot tahlili", "Jadval, hisobot, grafik tanlash", "Jadval va raqamlarni tahlil qil, hisobot tuz, qaysi grafik mosligini ayt.", "Oylik savdo raqamlarimni tahlil qilib ber"),
+              Zone("✨", "Kontent", "Post, reklama matni, g‘oyalar", "Post, reklama matni, sarlavha, skript va g‘oyalar yoz; auditoriya va platformaga moslashtir.", "Kofe do‘koni uchun Instagram post yoz"),
+              Zone("🎓", "O‘rganish", "Tushuntirish, dars rejasi, test", "Mavzuni sodda tushuntir, misol keltir, dars rejasi va test savollari tuz.", "Inflyatsiya nima? Oddiy misol bilan tushuntir")
+          )
+
+          // Bepul Gemini modellari: birinchisi ishlamasa (404/429/503), keyingisi sinaladi
+          val MODELS = listOf("gemini-flash-latest", "gemini-3-flash-preview", "gemini-2.5-flash")
+
+          val BASE = "Sen — shaxsiy AI agentsan (biznes, savdo, o‘qish va kontent bo‘yicha). O‘zbek tilida (lotin yozuvida) javob ber; foydalanuvchi boshqa tilda yozsa, shu tilda. Qisqa, aniq, do‘stona bo‘l, javobni natijadan boshla. Javob telefon ekranida o‘qiladi, shuning uchun ixcha yoz; jadval va # sarlavha ishlatma. Noaniq bo‘lsa, bitta aniqlashtiruvchi savol ber. Bilmasang, ochiq ayt, ma‘lumot to‘qima. " +
+              "Budilnik qo‘ya olasan: foydalanuvchi budilnik so‘rasa, javobingga alohida qatorda [[ALARM:SS:DD|yozuv|kunlar]] yoz (SS:DD — 24 soatlik vaqt; kunlar ixtiyoriy, 1=yakshanba … 7=shanba, vergul bilan, bir martalik bo‘lsa bo‘sh). Masalan: [[ALARM:06:30|Mashq|2,3,4,5,6]]. Vaqt aniq bo‘lmasa, avval so‘ra. " +
+              "Rasm so‘ralsa (rasm, surat, logo, illyustratsiya), javobing oxirida alohida qatorda [[IMG:ingliz tilidagi batafsil tasvir]] yoz va rasm tayyorlanayotganini bir jumlada ayt. Video yarata olmaysan: so‘ralsa, ochiq ayt va ssenariy yoki kadrlar rejasini taklif qil. " +
+              "Internet, kalendar yoki xabar yuborishga ulanmagansan; bunday so‘ralsa, tayyor qoralama yoki reja ber. Vazifa oxirida keyingi qadamni bir jumlada taklif qil."
+
+          val ALARM = Regex("""\[\[ALARM:(\d{1,2}):(\d{2})\|([^|\]]*)\|?([\d,]*)\]\]""")
+          val IMG = Regex("""\[\[IMG:([^\]]+)\]\]""")
+
+          class MainActivity : Activity() {
+              private lateinit var root: FrameLayout
+              private lateinit var bg: BlobView
+              private lateinit var content: FrameLayout
+              private lateinit var chatBox: LinearLayout
+              private lateinit var scroll: ScrollView
+              private lateinit var input: EditText
+              private val prefs by lazy { getSharedPreferences("yordamchi", MODE_PRIVATE) }
+              private val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
+              private val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
+              private var dark = true
+              private var zone = -1
+              private var cid = ""
+              private var hist = JSONArray()
+              private var busy = false
+              private var onHome = true
+              private var screen: () -> Unit = {}
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  val sys = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+                  dark = prefs.getBoolean("dark", sys)
+                  root = FrameLayout(this)
+                  bg = BlobView(this, dark)
+                  content = FrameLayout(this)
+                  root.addView(bg, FrameLayout.LayoutParams(MATCH, MATCH))
+                  root.addView(content, FrameLayout.LayoutParams(MATCH, MATCH))
+                  setContentView(root)
+                  applyBg()
+                  home()
+                  if (key().isEmpty()) root.post { askKey() }
+              }
+
+              // ---------- yordamchi funksiyalar ----------
+              private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
+              private fun c(s: String) = Color.parseColor(s)
+              private fun fg() = c(if (dark) "#EAF1FB" else "#0F1F33")
+              private fun mut() = c(if (dark) "#9FB2CB" else "#566A82")
+              private fun accent() = c(if (dark) "#4C7DFF" else "#2F6BFF")
+              private fun key() = prefs.getString("key", "") ?: ""
+              private fun lp(w: Int, h: Int, wt: Float = 0f) = LinearLayout.LayoutParams(w, h, wt)
+
+              private fun glass(r: Int = 22): Drawable = Glass(dp(r).toFloat(), dark, dp(1) * 1.5f)
+
+              private fun applyBg() {
+                  bg.dark = dark
+                  bg.invalidate()
+                  val base = c(if (dark) "#070B1E" else "#EAF0FF")
+                  window.statusBarColor = base
+                  window.navigationBarColor = base
+                  var f = 0
+                  if (!dark) {
+                      f = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                      if (Build.VERSION.SDK_INT >= 26) f = f or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                  }
+                  window.decorView.systemUiVisibility = f
+              }
+
+              private fun tv(t: CharSequence, sz: Float = 16f, col: Int = fg(), bold: Boolean = false) = TextView(this).apply {
+                  text = t
+                  textSize = sz
+                  setTextColor(col)
+                  if (bold) setTypeface(typeface, Typeface.BOLD)
+              }
+
+              private fun ib(t: String, f: () -> Unit) = TextView(this).apply {
+                  text = t
+                  textSize = 18f
+                  gravity = Gravity.CENTER
+                  background = glass(20)
+                  layoutParams = lp(dp(40), dp(40)).apply { leftMargin = dp(6) }
+                  setOnClickListener { f() }
+                  press(this)
+              }
+
+              private fun bar(title: String, back: Boolean, vararg btns: View) = LinearLayout(this).apply {
+                  gravity = Gravity.CENTER_VERTICAL
+                  background = glass(26)
+                  setPadding(dp(10), dp(8), dp(10), dp(8))
+                  if (back) addView(ib("‹") { goBack() })
+                  addView(tv(title, 20f, bold = true).apply { setPadding(dp(8), 0, 0, 0) }, lp(0, WRAP, 1f))
+                  btns.forEach { addView(it) }
+              }
+
+              private fun press(v: View) {
+                  v.setOnTouchListener { x, e ->
+                      when (e.actionMasked) {
+                          MotionEvent.ACTION_DOWN -> x.animate().scaleX(.96f).scaleY(.96f).setDuration(120).start()
+                          MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
+                              x.animate().scaleX(1f).scaleY(1f).setDuration(320).setInterpolator(OvershootInterpolator(3f)).start()
+                      }
+                      false
+                  }
+              }
+
+              private fun rise(v: View, i: Int) {
+                  v.alpha = 0f
+                  v.translationY = dp(26).toFloat()
+                  v.animate().alpha(1f).translationY(0f).setStartDelay(i * 45L).setDuration(420).start()
+              }
+
+              private fun setScreen(v: View) {
+                  content.removeAllViews()
+                  content.addView(v, FrameLayout.LayoutParams(MATCH, MATCH))
+              }
+
+              private fun down() { scroll.post { scroll.fullScroll(View.FOCUS_DOWN) } }
+
+              private fun fmt(s: String): CharSequence = Html.fromHtml(
+                  TextUtils.htmlEncode(s).replace(Regex("(?m)^#{1,4}\\s*"), "")
+                      .replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>").replace("\n", "<br>"),
+                  Html.FROM_HTML_MODE_COMPACT
+              )
+
+              // ---------- ekranlar ----------
+              private fun home() {
+                  onHome = true
+                  screen = { home() }
+                  val col = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(dp(14), dp(12), dp(14), dp(24))
+                  }
+                  col.addView(bar("Yordamchi", false,
+                      ib("🕘") { history() },
+                      ib("🌓") { dark = !dark; prefs.edit().putBoolean("dark", dark).apply(); applyBg(); screen() },
+                      ib("🔑") { askKey() }))
+                  col.addView(tv("Salom! Bugun nimani hal qilamiz?", 22f, bold = true).apply { setPadding(dp(4), dp(18), dp(4), dp(4)) })
+                  col.addView(tv("Zonani tanlang yoki Avto rejimda yozing.", 14f, mut()).apply { setPadding(dp(4), 0, dp(4), dp(10)) })
+                  col.addView(zoneRow("✨", "Avto", "Zonani agent o‘zi aniqlaydi") { openZone(-1) }.also { rise(it, 0) })
+                  ZONES.forEachIndexed { i, z -> col.addView(zoneRow(z.e, z.n, z.d) { openZone(i) }.also { rise(it, i + 1) }) }
+                  setScreen(ScrollView(this).apply { addView(col) })
+              }
+
+              private fun zoneRow(e: String, n: String, d: String, f: () -> Unit) = LinearLayout(this).apply {
+                  gravity = Gravity.CENTER_VERTICAL
+                  background = glass(22)
+                  setPadding(dp(14), dp(12), dp(14), dp(12))
+                  layoutParams = lp(MATCH, WRAP).apply { bottomMargin = dp(10) }
+                  addView(tv(e, 24f).apply { gravity = Gravity.CENTER; background = glass(16) }, lp(dp(48), dp(48)).apply { rightMargin = dp(12) })
+                  addView(LinearLayout(this@MainActivity).apply {
+                      orientation = LinearLayout.VERTICAL
+                      addView(tv(n, 17f, bold = true))
+                      addView(tv(d, 13f, mut()))
+                  }, lp(0, WRAP, 1f))
+                  addView(tv("›", 28f, mut()))
+                  setOnClickListener { f() }
+                  press(this)
+              }
+
+              private fun openZone(i: Int) {
+                  zone = i
+                  hist = JSONArray()
+                  cid = ""
+                  chat()
+              }
+
+              private fun chat() {
+                  onHome = false
+                  screen = { chat() }
+                  val col = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(dp(12), dp(10), dp(12), dp(10))
+                  }
+                  col.addView(bar(if (zone >= 0) ZONES[zone].n else "Avto zona", true))
+                  chatBox = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(0, dp(8), 0, dp(8))
+                  }
+                  scroll = ScrollView(this).apply { addView(chatBox) }
+                  col.addView(scroll, lp(MATCH, 0, 1f))
+                  input = EditText(this).apply {
+                      hint = "Xabar yozing…"
+                      setHintTextColor(mut())
+                      setTextColor(fg())
+                      textSize = 16f
+                      maxLines = 5
+                      background = glass(22)
+                      setPadding(dp(16), dp(10), dp(16), dp(10))
+                  }
+                  val sendBtn = ib("↑") { send(input.text.toString()) }.apply {
+                      setTextColor(Color.WHITE)
+                      background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(accent()) }
+                  }
+                  val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+                  row.addView(input, lp(0, WRAP, 1f))
+                  row.addView(ib("🎤") { listen() })
+                  row.addView(sendBtn)
+                  col.addView(row, lp(MATCH, WRAP).apply { topMargin = dp(6) })
+                  setScreen(col)
+                  if (hist.length() == 0) {
+                      intro()
+                  } else {
+                      for (n in 0 until hist.length()) {
+                          val m = hist.getJSONObject(n)
+                          if (m.getString("role") == "user") {
+                              chatBox.addView(userBubble(m.getString("content")))
+                          } else {
+                              val b = botBox()
+                              fill(b, m.getString("content"))
+                              chatBox.addView(b)
+                          }
+                      }
+                      down()
+                  }
+              }
+
+              private fun intro() {
+                  val b = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(dp(4), dp(12), dp(4), dp(12))
+                  }
+                  if (zone >= 0) {
+                      val z = ZONES[zone]
+                      b.addView(tv(z.e + " " + z.n, 18f, bold = true))
+                      b.addView(tv(z.d, 14f, mut()))
+                      b.addView(tv(z.s, 14f, accent()).apply {
+                          background = glass(20)
+                          setPadding(dp(14), dp(9), dp(14), dp(9))
+                          layoutParams = lp(WRAP, WRAP).apply { topMargin = dp(12) }
+                          setOnClickListener { input.setText(z.s); input.setSelection(z.s.length) }
+                      })
+                  } else {
+                      b.addView(tv("Xohlagan savolingizni yozing: agent mos zonani o‘zi tanlaydi.", 14f, mut()))
+                  }
+                  chatBox.addView(b)
+              }
+
+              private fun userBubble(t: String) = tv(t, 16f, Color.WHITE).apply {
+                  background = LayerDrawable(arrayOf<Drawable>(
+                      GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(c("#E08AB0FF"), c("#EB2F6BFF"))).apply { cornerRadius = dp(20).toFloat() },
+                      Glass(dp(20).toFloat(), dark, dp(1) * 1.5f, false)))
+                  setPadding(dp(14), dp(10), dp(14), dp(10))
+                  layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { gravity = Gravity.END; topMargin = dp(10); leftMargin = dp(48) }
+              }
+
+              private fun botBox() = LinearLayout(this).apply {
+                  orientation = LinearLayout.VERTICAL
+                  background = glass(20)
+                  setPadding(dp(14), dp(10), dp(14), dp(10))
+                  layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) }
+              }
+
+              private fun fill(b: LinearLayout, raw: String) {
+                  b.removeAllViews()
+                  b.addView(tv(fmt(raw.replace(IMG, "").replace(ALARM, "").trim())))
+                  IMG.findAll(raw).forEach { m ->
+                      val p = m.groupValues[1].trim()
+                      val iv = ImageView(this).apply {
+                          adjustViewBounds = true
+                          minimumHeight = dp(200)
+                          background = glass(16)
+                          clipToOutline = true
+                          outlineProvider = object : ViewOutlineProvider() {
+                              override fun getOutline(v: View, o: Outline) {
+                                  o.setRoundRect(0, 0, v.width, v.height, dp(16).toFloat())
+                              }
+                          }
+                          layoutParams = lp(MATCH, WRAP).apply { topMargin = dp(10) }
+                      }
+                      b.addView(iv)
+                      loadImg(iv, p, b)
+                  }
+              }
+
+              private fun loadImg(iv: ImageView, p: String, box: LinearLayout) {
+                  Thread {
+                      var bmp: Bitmap? = null
+                      try {
+                          val u = "https://image.pollinations.ai/prompt/" + URLEncoder.encode(p, "UTF-8").replace("+", "%20") +
+                              "?width=768&height=768&nologo=true&seed=" + (p.hashCode() and 0xFFFF)
+                          val cn = URL(u).openConnection() as HttpURLConnection
+                          cn.connectTimeout = 15000
+                          cn.readTimeout = 90000
+                          bmp = BitmapFactory.decodeStream(cn.inputStream)
+                      } catch (e: Exception) {
+                      }
+                      runOnUiThread {
+                          if (bmp != null) {
+                              iv.setImageBitmap(bmp)
+                          } else {
+                              box.removeView(iv)
+                              box.addView(tv("Rasm yuklanmadi. Bepul xizmat band, 15 soniyadan keyin qayta urinib ko‘ring.", 13f, mut()))
+                          }
+                      }
+                  }.start()
+              }
+
+              // ---------- suhbat ----------
+              private fun instr(): String =
+                  if (zone >= 0) BASE + "\n\nHozirgi ish zonasi: " + ZONES[zone].n + ". Ko‘rsatma: " + ZONES[zone].p
+                  else BASE + "\n\nIsh zonalari:\n" + ZONES.joinToString("\n") { "- " + it.n + ": " + it.p } +
+                      "\nSavolga mos zonani o‘zing aniqla va so‘rab o‘tirma."
+
+              private fun send(text: String) {
+                  val t = text.trim()
+                  if (t.isEmpty() || busy) return
+                  input.setText("")
+                  if (cid.isEmpty()) cid = System.currentTimeMillis().toString()
+                  hist.put(JSONObject().put("role", "user").put("content", t))
+                  if (hist.length() == 1) chatBox.removeAllViews()
+                  chatBox.addView(userBubble(t))
+                  val b = botBox()
+                  b.addView(tv("Yozmoqda…", 16f, mut()))
+                  chatBox.addView(b)
+                  rise(b, 0)
+                  down()
+                  busy = true
+                  Thread {
+                      val r = gemini()
+                      runOnUiThread {
+                          busy = false
+                          if (r.first) {
+                              hist.put(JSONObject().put("role", "assistant").put("content", r.second))
+                              fill(b, r.second)
+                              alarms(r.second, b)
+                              save()
+                          } else {
+                              hist.remove(hist.length() - 1)
+                              val m = r.second
+                              val msg = when {
+                                  m == "NOKEY" -> "Avval 🔑 tugmasidan API kalitni kiriting."
+                                  Regex("HTTP (400|401|403)").containsMatchIn(m) -> "API kalit noto‘g‘ri. 🔑 tugmasidan yangilang."
+                                  m.contains("429") -> "So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring."
+                                  m == "EMPTY" -> "Javob bo‘sh keldi. Savolni boshqacha yozib ko‘ring."
+                                  else -> "Xatolik. Internetni tekshirib, qayta urinib ko‘ring."
+                              }
+                              b.removeAllViews()
+                              b.addView(tv(msg, 15f, mut()))
+                          }
+                          down()
+                      }
+                  }.start()
+              }
+
+              private fun gemini(): Pair<Boolean, String> {
+                  val key = key()
+                  if (key.isEmpty()) return Pair(false, "NOKEY")
+                  var out = "NET"
+                  try {
+                      val contents = JSONArray()
+                      for (n in 0 until hist.length()) {
+                          val t = hist.getJSONObject(n)
+                          val role = if (t.getString("role") == "assistant") "model" else "user"
+                          contents.put(JSONObject().put("role", role)
+                              .put("parts", JSONArray().put(JSONObject().put("text", t.getString("content")))))
+                      }
+                      val body = JSONObject()
+                          .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", instr()))))
+                          .put("contents", contents)
+                          .put("generationConfig", JSONObject().put("maxOutputTokens", 2048))
+                          .toString().toByteArray()
+                      for (m in MODELS) {
+                          val cn = URL("https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent")
+                              .openConnection() as HttpURLConnection
+                          cn.requestMethod = "POST"
+                          cn.doOutput = true
+                          cn.connectTimeout = 15000
+                          cn.readTimeout = 90000
+                          cn.setRequestProperty("content-type", "application/json")
+                          cn.setRequestProperty("x-goog-api-key", key)
+                          cn.outputStream.use { it.write(body) }
+                          val code = cn.responseCode
+                          val s = (if (code < 400) cn.inputStream else cn.errorStream).bufferedReader().readText()
+                          if (code in 200..299) {
+                              val parts = JSONObject(s).optJSONArray("candidates")?.optJSONObject(0)
+                                  ?.optJSONObject("content")?.optJSONArray("parts")
+                              val text = if (parts == null) "" else (0 until parts.length())
+                                  .map { parts.getJSONObject(it) }
+                                  .filter { !it.optBoolean("thought") }
+                                  .joinToString("") { it.optString("text") }
+                              return if (text.isNotEmpty()) Pair(true, text) else Pair(false, "EMPTY")
+                          }
+                          out = "HTTP $code"
+                          if (code != 404 && code != 429 && code != 503) break
+                      }
+                  } catch (e: Exception) {
+                      out = "NET"
+                  }
+                  return Pair(false, out)
+              }
+
+              private fun alarms(raw: String, b: LinearLayout) {
+                  ALARM.findAll(raw).forEach { m ->
+                      val h = m.groupValues[1].toInt()
+                      val mi = m.groupValues[2].toInt()
+                      var ok = h in 0..23 && mi in 0..59
+                      if (ok) {
+                          try {
+                              val i = Intent(AlarmClock.ACTION_SET_ALARM)
+                                  .putExtra(AlarmClock.EXTRA_HOUR, h)
+                                  .putExtra(AlarmClock.EXTRA_MINUTES, mi)
+                                  .putExtra(AlarmClock.EXTRA_MESSAGE, m.groupValues[3].ifEmpty { "Yordamchi" })
+                                  .putExtra(AlarmClock.EXTRA_SKIP_UI, true)
+                              val d = m.groupValues[4].split(",").mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }
+                              if (d.isNotEmpty()) i.putIntegerArrayListExtra(AlarmClock.EXTRA_DAYS, ArrayList(d))
+                              startActivity(i)
+                          } catch (e: Exception) {
+                              ok = false
+                          }
+                      }
+                      val hm = "%02d:%02d".format(h, mi)
+                      b.addView(tv(if (ok) "⏰ Budilnik qo‘yildi: $hm" else "Budilnik qo‘yilmadi: $hm", 14f, mut()))
+                  }
+              }
+
+              // ---------- ovoz ----------
+              private fun listen() {
+                  try {
+                      startActivityForResult(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                          .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                          .putExtra(RecognizerIntent.EXTRA_LANGUAGE, "uz-UZ")
+                          .putExtra(RecognizerIntent.EXTRA_PROMPT, "Gapiring…"), 7)
+                  } catch (e: Exception) {
+                      Toast.makeText(this, "Ovozli kiritish topilmadi", Toast.LENGTH_SHORT).show()
+                  }
               }
 
               override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
                   super.onActivityResult(requestCode, resultCode, data)
                   if (requestCode == 7 && resultCode == RESULT_OK) {
-                      val t = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: ""
-                      web.evaluateJavascript("onVoice(${JSONObject.quote(t)})", null)
+                      val t = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: return
+                      input.setText((input.text.toString() + " " + t).trim())
+                      input.setSelection(input.text.length)
                   }
               }
 
-              inner class Bridge {
-                  @JavascriptInterface
-                  fun listen() {
-                      runOnUiThread {
-                          try {
-                              val i = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                                  .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                                  .putExtra(RecognizerIntent.EXTRA_LANGUAGE, "uz-UZ")
-                                  .putExtra(RecognizerIntent.EXTRA_PROMPT, "Gapiring…")
-                              startActivityForResult(i, 7)
-                          } catch (e: Exception) {
-                              web.evaluateJavascript("onVoice('')", null)
-                          }
-                      }
-                  }
+              // ---------- tarix ----------
+              private fun load(): JSONArray = try { JSONArray(prefs.getString("yh", "[]")) } catch (e: Exception) { JSONArray() }
+              private fun store(a: JSONArray) { prefs.edit().putString("yh", a.toString()).apply() }
 
-                  @JavascriptInterface
-                  fun hasKey(): Boolean = !prefs.getString("key", "").isNullOrEmpty()
-
-                  @JavascriptInterface
-                  fun saveKey(k: String) {
-                      prefs.edit().putString("key", k.trim()).apply()
+              private fun save() {
+                  if (hist.length() == 0 || cid.isEmpty()) return
+                  val old = load()
+                  val a = JSONArray()
+                  a.put(JSONObject().put("id", cid).put("z", zone)
+                      .put("title", hist.getJSONObject(0).getString("content").take(40))
+                      .put("m", hist).put("t", System.currentTimeMillis()))
+                  for (n in 0 until old.length()) {
+                      val o = old.getJSONObject(n)
+                      if (o.getString("id") != cid && a.length() < 50) a.put(o)
                   }
-
-                  // days: "2,3,4" (1=yakshanba ... 7=shanba), bo'sh bo'lsa bir martalik
-                  @JavascriptInterface
-                  fun setAlarm(h: Int, m: Int, label: String, days: String): Boolean {
-                      if (h !in 0..23 || m !in 0..59) return false
-                      return try {
-                          val i = Intent(AlarmClock.ACTION_SET_ALARM)
-                              .putExtra(AlarmClock.EXTRA_HOUR, h)
-                              .putExtra(AlarmClock.EXTRA_MINUTES, m)
-                              .putExtra(AlarmClock.EXTRA_MESSAGE, label)
-                              .putExtra(AlarmClock.EXTRA_SKIP_UI, true)
-                              .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                          val d = days.split(",").mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }
-                          if (d.isNotEmpty()) i.putExtra(AlarmClock.EXTRA_DAYS, ArrayList(d))
-                          startActivity(i)
-                          true
-                      } catch (e: Exception) {
-                          false
-                      }
-                  }
-
-                  @JavascriptInterface
-                  fun ask(id: String, system: String, turns: String) {
-                      Thread {
-                          var ok = false
-                          var out = "NET"
-                          try {
-                              val src = JSONArray(turns)
-                              val contents = JSONArray()
-                              for (n in 0 until src.length()) {
-                                  val t = src.getJSONObject(n)
-                                  val role = if (t.getString("role") == "assistant") "model" else "user"
-                                  contents.put(
-                                      JSONObject().put("role", role).put(
-                                          "parts", JSONArray().put(JSONObject().put("text", t.getString("content")))
-                                      )
-                                  )
-                              }
-                              val body = JSONObject()
-                                  .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", system))))
-                                  .put("contents", contents)
-                                  .put("generationConfig", JSONObject().put("maxOutputTokens", 2048))
-                                  .toString().toByteArray()
-                              val key = prefs.getString("key", "") ?: ""
-                              for (m in MODELS) {
-                                  val c = URL("https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent")
-                                      .openConnection() as HttpURLConnection
-                                  c.requestMethod = "POST"
-                                  c.doOutput = true
-                                  c.connectTimeout = 15000
-                                  c.readTimeout = 90000
-                                  c.setRequestProperty("content-type", "application/json")
-                                  c.setRequestProperty("x-goog-api-key", key)
-                                  c.outputStream.use { it.write(body) }
-                                  val code = c.responseCode
-                                  val s = (if (code < 400) c.inputStream else c.errorStream).bufferedReader().readText()
-                                  if (code in 200..299) {
-                                      val parts = JSONObject(s).optJSONArray("candidates")?.optJSONObject(0)
-                                          ?.optJSONObject("content")?.optJSONArray("parts")
-                                      val text = if (parts == null) "" else (0 until parts.length())
-                                          .map { parts.getJSONObject(it) }
-                                          .filter { !it.optBoolean("thought") }
-                                          .joinToString("") { it.optString("text") }
-                                      ok = text.isNotEmpty()
-                                      out = if (ok) text else "EMPTY"
-                                      break
-                                  }
-                                  out = "HTTP $code"
-                                  if (code != 404 && code != 429 && code != 503) break
-                              }
-                          } catch (e: Exception) {
-                              out = "NET"
-                          }
-                          runOnUiThread {
-                              web.evaluateJavascript("onAnswer(${JSONObject.quote(id)},$ok,${JSONObject.quote(out)})", null)
-                          }
-                      }.start()
-                  }
+                  store(a)
               }
+
+              private fun history() {
+                  onHome = false
+                  screen = { history() }
+                  val col = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      setPadding(dp(14), dp(12), dp(14), dp(24))
+                  }
+                  col.addView(bar("Suhbatlar", true))
+                  val a = load()
+                  if (a.length() == 0) {
+                      col.addView(tv("Hali suhbat yo‘q.", 15f, mut()).apply { setPadding(dp(4), dp(16), 0, 0) })
+                  }
+                  for (n in 0 until a.length()) {
+                      val o = a.getJSONObject(n)
+                      val z = o.getInt("z")
+                      val row = LinearLayout(this).apply {
+                          gravity = Gravity.CENTER_VERTICAL
+                          background = glass(18)
+                          layoutParams = lp(MATCH, WRAP).apply { topMargin = dp(10) }
+                      }
+                      val box = LinearLayout(this).apply {
+                          orientation = LinearLayout.VERTICAL
+                          setPadding(dp(14), dp(12), dp(8), dp(12))
+                          addView(tv(o.getString("title"), 16f, bold = true).apply { maxLines = 1; ellipsize = TextUtils.TruncateAt.END })
+                          addView(tv((if (z >= 0) ZONES[z].n else "Avto") + " · " +
+                              java.text.DateFormat.getDateInstance().format(java.util.Date(o.getLong("t"))), 12f, mut()))
+                          setOnClickListener { zone = z; cid = o.getString("id"); hist = o.getJSONArray("m"); chat() }
+                      }
+                      press(box)
+                      row.addView(box, lp(0, WRAP, 1f))
+                      row.addView(tv("🗑", 18f).apply {
+                          setPadding(dp(14), dp(12), dp(14), dp(12))
+                          setOnClickListener { a.remove(n); store(a); history() }
+                      })
+                      col.addView(row)
+                  }
+                  setScreen(ScrollView(this).apply { addView(col) })
+              }
+
+              private fun askKey() {
+                  val et = EditText(this).apply {
+                      hint = "Gemini API kalit (AIza…)"
+                      setText(key())
+                      setSingleLine()
+                  }
+                  AlertDialog.Builder(this)
+                      .setTitle("API kalit")
+                      .setMessage("aistudio.google.com/apikey dan bepul oling")
+                      .setView(et)
+                      .setPositiveButton("Saqlash") { _, _ -> prefs.edit().putString("key", et.text.toString().trim()).apply() }
+                      .setNegativeButton("Bekor", null)
+                      .show()
+              }
+
+              private fun goBack() { if (onHome) finish() else home() }
+
+              @Suppress("DEPRECATION")
+              override fun onBackPressed() { goBack() }
           }
           __EOF__
           mkdir -p 'Yordamchi/gradle/wrapper'
