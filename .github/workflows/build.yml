@@ -1,74 +1,95 @@
 name: Build APK
-on: [push, workflow_dispatch]
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+
+      - name: JDK 17 o'rnatish
+        uses: actions/setup-java@v4
         with:
-          distribution: temurin
           java-version: '17'
-      - uses: gradle/actions/setup-gradle@v4
+          distribution: 'temurin'
+
+      - name: Gradle o'rnatish
+        uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: '8.9'
-      - name: Create project
+          gradle-version: '8.5'
+
+      - name: Loyiha fayllarini yaratish
+        shell: bash
         run: |
-          mkdir -p 'Yordamchi'
-          cat > 'Yordamchi/build.gradle.kts' <<'__EOF__'
-          plugins {
-              id("com.android.application") version "8.5.2" apply false
-              id("org.jetbrains.kotlin.android") version "2.0.20" apply false
+          mkdir -p app/src/main/java/com/dadam/yordamchi
+          mkdir -p app/src/main/assets
+
+          [ -f settings.gradle ] || cat > settings.gradle <<'EOF'
+          rootProject.name = "DadamYordamchisi"
+          include ':app'
+          EOF
+
+          [ -f build.gradle ] || cat > build.gradle <<'EOF'
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath 'com.android.tools.build:gradle:8.2.0'
+              }
           }
-          __EOF__
-          mkdir -p 'Yordamchi'
-          cat > 'Yordamchi/gradle.properties' <<'__EOF__'
+          allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          EOF
+
+          [ -f gradle.properties ] || cat > gradle.properties <<'EOF'
+          android.useAndroidX=true
+          android.enableJetifier=true
           org.gradle.jvmargs=-Xmx2048m
-          android.nonTransitiveRClass=true
-          __EOF__
-          mkdir -p 'Yordamchi'
-          cat > 'Yordamchi/settings.gradle.kts' <<'__EOF__'
-          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
-          dependencyResolutionManagement { repositories { google(); mavenCentral() } }
-          rootProject.name = "Yordamchi"
-          include(":app")
-          __EOF__
-          mkdir -p 'Yordamchi/app'
-          cat > 'Yordamchi/app/build.gradle.kts' <<'__EOF__'
+          EOF
+
+          [ -f app/build.gradle ] || cat > app/build.gradle <<'EOF'
           plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
+              id 'com.android.application'
           }
           android {
-              namespace = "uz.yordamchi"
-              compileSdk = 34
+              namespace 'com.dadam.yordamchi'
+              compileSdk 34
               defaultConfig {
-                  applicationId = "uz.yordamchi"
-                  minSdk = 24
-                  targetSdk = 34
-                  versionCode = 1
-                  versionName = "1.0"
+                  applicationId "com.dadam.yordamchi"
+                  minSdk 21
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
               }
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                  }
               }
-              kotlinOptions { jvmTarget = "17" }
           }
-          __EOF__
-          mkdir -p 'Yordamchi/app/src/main'
-          cat > 'Yordamchi/app/src/main/AndroidManifest.xml' <<'__EOF__'
+          EOF
+
+          [ -f app/src/main/AndroidManifest.xml ] || cat > app/src/main/AndroidManifest.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.INTERNET" />
-              <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
               <application
-                  android:label="Yordamchi"
-                  android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+                  android:allowBackup="true"
+                  android:label="Dadam Yordamchisi"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar">
                   <activity
                       android:name=".MainActivity"
-                      android:exported="true"
-                      android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode"
-                      android:windowSoftInputMode="adjustResize">
+                      android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
@@ -76,642 +97,221 @@ jobs:
                   </activity>
               </application>
           </manifest>
-          __EOF__
-          mkdir -p 'Yordamchi/app/src/main/java/uz/yordamchi'
-          cat > 'Yordamchi/app/src/main/java/uz/yordamchi/MainActivity.kt' <<'__EOF__'
-          package uz.yordamchi
+          EOF
 
-          import android.app.Activity
-          import android.app.AlertDialog
-          import android.animation.ValueAnimator
-          import android.content.Context
-          import android.content.Intent
-          import android.graphics.drawable.Drawable
-          import android.graphics.drawable.LayerDrawable
-          import android.view.animation.LinearInterpolator
-          import android.view.animation.OvershootInterpolator
-          import kotlin.math.cos
-          import kotlin.math.sin
-          import android.content.res.Configuration
-          import android.graphics.*
-          import android.graphics.drawable.GradientDrawable
-          import android.os.Build
-          import android.os.Bundle
-          import android.provider.AlarmClock
-          import android.speech.RecognizerIntent
-          import android.text.Html
-          import android.text.TextUtils
-          import android.view.*
-          import android.widget.*
-          import org.json.JSONArray
-          import org.json.JSONObject
-          import java.net.HttpURLConnection
-          import java.net.URL
-          import java.net.URLEncoder
+          [ -f app/src/main/java/com/dadam/yordamchi/MainActivity.java ] || cat > app/src/main/java/com/dadam/yordamchi/MainActivity.java <<'EOF'
+          package com.dadam.yordamchi;
 
-          class Zone(val e: String, val n: String, val d: String, val p: String, val s: String)
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
 
-          // Shisha: gradient to‘ldirish, yorqin sinish chetlari va tepada yaltiroq nur
-          class Glass(private val r: Float, private val dark: Boolean, private val sw: Float, private val fillOn: Boolean = true) : Drawable() {
-              private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
-              private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = sw }
-              private val shine = Paint(Paint.ANTI_ALIAS_FLAG)
-              private val path = Path()
-              private fun w(a: Int) = Color.argb(a, 255, 255, 255)
+          public class MainActivity extends Activity {
+              private WebView webView;
 
-              override fun onBoundsChange(b: Rect) {
-                  val wd = b.width().toFloat()
-                  val ht = b.height().toFloat()
-                  path.reset()
-                  path.addRoundRect(RectF(sw / 2, sw / 2, wd - sw / 2, ht - sw / 2), r, r, Path.Direction.CW)
-                  fill.shader = LinearGradient(0f, 0f, 0f, ht, w(if (dark) 60 else 175), w(if (dark) 12 else 70), Shader.TileMode.CLAMP)
-                  edge.shader = LinearGradient(0f, 0f, wd, ht, intArrayOf(w(240), w(30), w(30), w(150)), floatArrayOf(0f, .35f, .65f, 1f), Shader.TileMode.CLAMP)
-                  shine.shader = LinearGradient(0f, 0f, 0f, ht * .5f, w(if (dark) 70 else 120), w(0), Shader.TileMode.CLAMP)
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  webView = new WebView(this);
+                  setContentView(webView);
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/index.html");
               }
 
-              override fun draw(c: Canvas) {
-                  if (fillOn) c.drawPath(path, fill)
-                  c.save()
-                  c.clipPath(path)
-                  c.drawRect(0f, 0f, bounds.width().toFloat(), bounds.height() * .5f, shine)
-                  c.restore()
-                  c.drawPath(path, edge)
-              }
-
-              override fun setAlpha(alpha: Int) {}
-              override fun setColorFilter(cf: ColorFilter?) {}
-              @Suppress("DEPRECATION")
-              override fun getOpacity() = PixelFormat.TRANSLUCENT
-          }
-
-          // Orqa fon: sekin siljiydigan rangli dog‘lar (shisha ular orqali yaltiraydi)
-          class BlobView(ctx: Context, var dark: Boolean) : View(ctx) {
-              private val p = Paint(Paint.ANTI_ALIAS_FLAG)
-              private var t = 0f
-              private val anim = ValueAnimator.ofFloat(0f, 6.2831855f).apply {
-                  duration = 28000
-                  repeatCount = ValueAnimator.INFINITE
-                  interpolator = LinearInterpolator()
-                  addUpdateListener { t = it.animatedValue as Float; invalidate() }
-              }
-
-              override fun onAttachedToWindow() { super.onAttachedToWindow(); anim.start() }
-              override fun onDetachedFromWindow() { anim.cancel(); super.onDetachedFromWindow() }
-
-              override fun onDraw(c: Canvas) {
-                  val w = width.toFloat()
-                  val h = height.toFloat()
-                  c.drawColor(Color.parseColor(if (dark) "#070B1E" else "#EAF0FF"))
-                  blob(c, w * (.2f + .14f * sin(t)), h * (.14f + .08f * cos(t)), w * .8f, if (dark) "#4C5CFF" else "#8FB0FF")
-                  blob(c, w * (.88f + .1f * cos(t + 1f)), h * (.38f + .1f * sin(t + 2f)), w * .75f, if (dark) "#E0309A" else "#FFA6D5")
-                  blob(c, w * (.28f + .12f * sin(t + 4f)), h * (.86f + .06f * cos(t + 3f)), w * .85f, if (dark) "#00C2A8" else "#9BF0D6")
-                  blob(c, w * (.75f + .1f * cos(t + 5f)), h * (.72f + .08f * sin(t + 1f)), w * .5f, if (dark) "#FF8A3D" else "#FFD29B")
-              }
-
-              private fun blob(c: Canvas, x: Float, y: Float, rad: Float, hex: String) {
-                  val col = Color.parseColor(hex)
-                  p.shader = RadialGradient(x, y, rad, Color.argb(210, Color.red(col), Color.green(col), Color.blue(col)),
-                      Color.argb(0, Color.red(col), Color.green(col), Color.blue(col)), Shader.TileMode.CLAMP)
-                  c.drawCircle(x, y, rad, p)
-              }
-          }
-
-          val ZONES = listOf(
-              Zone("📋", "Vazifalar va reja", "Kunlik va haftalik reja, ustuvorliklar", "Vazifalarni shoshilinch va muhimlik bo‘yicha tartibla, kunlik va haftalik reja tuz, katta ishni kichik qadamlarga bo‘l.", "Ertangi 5 ta vazifamni muhimlik bo‘yicha tartibla"),
-              Zone("🗓", "Kalendar", "Uchrashuv, eslatma, vaqt taqsimoti", "Uchrashuv va eslatmalarni tartibla, vaqt to‘qnashuvini ko‘rsat, bo‘sh vaqt taklif qil.", "Haftam uchun uchrashuvlar jadvalini tuz"),
-              Zone("✉️", "Xat va xabarlar", "Email, Telegram, rasmiy xat", "Email, Telegram va rasmiy xatlarni yoz. Ohangni moslashtir (rasmiy, do‘stona, qat‘iy). Yuborishni foydalanuvchining o‘ziga qoldir.", "Mijozga to‘lov kechikkani haqida muloyim xat yoz"),
-              Zone("📄", "Hujjatlar", "Yozish, tahrir, qisqa xulosa", "Matn yoz, tahrirla, xatolarini tuzat, uzun matndan qisqa xulosa chiqar.", "Shu matnni tahrirla va qisqartir:"),
-              Zone("🔎", "Tadqiqot", "Ma‘lumot yig‘ish, taqqoslash", "Mavzuni tahlil qil, variantlarni taqqosla, ishonchsiz joyini belgila. Internetdan qidira olmaysan: bilganing asosida javob ber va yangilanishi mumkin bo‘lgan joyni ayt.", "Onlayn do‘kon ochish uchun 3 ta platformani taqqosla"),
-              Zone("🌐", "Tarjima", "O‘zbek, rus, ingliz tillari", "O‘zbek, rus va ingliz tillari orasida tarjima qil, ma‘no va ohangni saqla.", "Ruscha va inglizchaga tarjima qil: Buyurtmangiz tayyor"),
-              Zone("💰", "Moliya", "Byudjet, xarajat, foyda", "Byudjet tuz, xarajat va foydani hisobla. Investitsiya bo‘yicha qat‘iy maslahat berma, faqat ma‘lumot ber.", "Oylik daromadim 8 mln so‘m, byudjet tuz"),
-              Zone("📊", "Ma‘lumot tahlili", "Jadval, hisobot, grafik tanlash", "Jadval va raqamlarni tahlil qil, hisobot tuz, qaysi grafik mosligini ayt.", "Oylik savdo raqamlarimni tahlil qilib ber"),
-              Zone("✨", "Kontent", "Post, reklama matni, g‘oyalar", "Post, reklama matni, sarlavha, skript va g‘oyalar yoz; auditoriya va platformaga moslashtir.", "Kofe do‘koni uchun Instagram post yoz"),
-              Zone("🎓", "O‘rganish", "Tushuntirish, dars rejasi, test", "Mavzuni sodda tushuntir, misol keltir, dars rejasi va test savollari tuz.", "Inflyatsiya nima? Oddiy misol bilan tushuntir")
-          )
-
-          // Bepul Gemini modellari: birinchisi ishlamasa (404/429/503), keyingisi sinaladi
-          val MODELS = listOf("gemini-flash-latest", "gemini-3-flash-preview", "gemini-2.5-flash")
-
-          val BASE = "Sen — shaxsiy AI agentsan (biznes, savdo, o‘qish va kontent bo‘yicha). O‘zbek tilida (lotin yozuvida) javob ber; foydalanuvchi boshqa tilda yozsa, shu tilda. Qisqa, aniq, do‘stona bo‘l, javobni natijadan boshla. Javob telefon ekranida o‘qiladi, shuning uchun ixcha yoz; jadval va # sarlavha ishlatma. Noaniq bo‘lsa, bitta aniqlashtiruvchi savol ber. Bilmasang, ochiq ayt, ma‘lumot to‘qima. " +
-              "Budilnik qo‘ya olasan: foydalanuvchi budilnik so‘rasa, javobingga alohida qatorda [[ALARM:SS:DD|yozuv|kunlar]] yoz (SS:DD — 24 soatlik vaqt; kunlar ixtiyoriy, 1=yakshanba … 7=shanba, vergul bilan, bir martalik bo‘lsa bo‘sh). Masalan: [[ALARM:06:30|Mashq|2,3,4,5,6]]. Vaqt aniq bo‘lmasa, avval so‘ra. " +
-              "Rasm so‘ralsa (rasm, surat, logo, illyustratsiya), javobing oxirida alohida qatorda [[IMG:ingliz tilidagi batafsil tasvir]] yoz va rasm tayyorlanayotganini bir jumlada ayt. Video yarata olmaysan: so‘ralsa, ochiq ayt va ssenariy yoki kadrlar rejasini taklif qil. " +
-              "Internet, kalendar yoki xabar yuborishga ulanmagansan; bunday so‘ralsa, tayyor qoralama yoki reja ber. Vazifa oxirida keyingi qadamni bir jumlada taklif qil."
-
-          val ALARM = Regex("""\[\[ALARM:(\d{1,2}):(\d{2})\|([^|\]]*)\|?([\d,]*)\]\]""")
-          val IMG = Regex("""\[\[IMG:([^\]]+)\]\]""")
-
-          class MainActivity : Activity() {
-              private lateinit var root: FrameLayout
-              private lateinit var bg: BlobView
-              private lateinit var content: FrameLayout
-              private lateinit var chatBox: LinearLayout
-              private lateinit var scroll: ScrollView
-              private lateinit var input: EditText
-              private val prefs by lazy { getSharedPreferences("yordamchi", MODE_PRIVATE) }
-              private val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
-              private val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
-              private var dark = true
-              private var zone = -1
-              private var cid = ""
-              private var hist = JSONArray()
-              private var busy = false
-              private var onHome = true
-              private var screen: () -> Unit = {}
-
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  val sys = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-                  dark = prefs.getBoolean("dark", sys)
-                  root = FrameLayout(this)
-                  bg = BlobView(this, dark)
-                  content = FrameLayout(this)
-                  root.addView(bg, FrameLayout.LayoutParams(MATCH, MATCH))
-                  root.addView(content, FrameLayout.LayoutParams(MATCH, MATCH))
-                  setContentView(root)
-                  applyBg()
-                  home()
-                  if (key().isEmpty()) root.post { askKey() }
-              }
-
-              // ---------- yordamchi funksiyalar ----------
-              private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
-              private fun c(s: String) = Color.parseColor(s)
-              private fun fg() = c(if (dark) "#EAF1FB" else "#0F1F33")
-              private fun mut() = c(if (dark) "#9FB2CB" else "#566A82")
-              private fun accent() = c(if (dark) "#4C7DFF" else "#2F6BFF")
-              private fun key() = prefs.getString("key", "") ?: ""
-              private fun lp(w: Int, h: Int, wt: Float = 0f) = LinearLayout.LayoutParams(w, h, wt)
-
-              private fun glass(r: Int = 22): Drawable = Glass(dp(r).toFloat(), dark, dp(1) * 1.5f)
-
-              private fun applyBg() {
-                  bg.dark = dark
-                  bg.invalidate()
-                  val base = c(if (dark) "#070B1E" else "#EAF0FF")
-                  window.statusBarColor = base
-                  window.navigationBarColor = base
-                  var f = 0
-                  if (!dark) {
-                      f = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                      if (Build.VERSION.SDK_INT >= 26) f = f or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-                  }
-                  window.decorView.systemUiVisibility = f
-              }
-
-              private fun tv(t: CharSequence, sz: Float = 16f, col: Int = fg(), bold: Boolean = false) = TextView(this).apply {
-                  text = t
-                  textSize = sz
-                  setTextColor(col)
-                  if (bold) setTypeface(typeface, Typeface.BOLD)
-              }
-
-              private fun ib(t: String, f: () -> Unit) = TextView(this).apply {
-                  text = t
-                  textSize = 18f
-                  gravity = Gravity.CENTER
-                  background = glass(20)
-                  layoutParams = lp(dp(40), dp(40)).apply { leftMargin = dp(6) }
-                  setOnClickListener { f() }
-                  press(this)
-              }
-
-              private fun bar(title: String, back: Boolean, vararg btns: View) = LinearLayout(this).apply {
-                  gravity = Gravity.CENTER_VERTICAL
-                  background = glass(26)
-                  setPadding(dp(10), dp(8), dp(10), dp(8))
-                  if (back) addView(ib("‹") { goBack() })
-                  addView(tv(title, 20f, bold = true).apply { setPadding(dp(8), 0, 0, 0) }, lp(0, WRAP, 1f))
-                  btns.forEach { addView(it) }
-              }
-
-              private fun press(v: View) {
-                  v.setOnTouchListener { x, e ->
-                      when (e.actionMasked) {
-                          MotionEvent.ACTION_DOWN -> x.animate().scaleX(.96f).scaleY(.96f).setDuration(120).start()
-                          MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL ->
-                              x.animate().scaleX(1f).scaleY(1f).setDuration(320).setInterpolator(OvershootInterpolator(3f)).start()
-                      }
-                      false
-                  }
-              }
-
-              private fun rise(v: View, i: Int) {
-                  v.alpha = 0f
-                  v.translationY = dp(26).toFloat()
-                  v.animate().alpha(1f).translationY(0f).setStartDelay(i * 45L).setDuration(420).start()
-              }
-
-              private fun setScreen(v: View) {
-                  content.removeAllViews()
-                  content.addView(v, FrameLayout.LayoutParams(MATCH, MATCH))
-              }
-
-              private fun down() { scroll.post { scroll.fullScroll(View.FOCUS_DOWN) } }
-
-              private fun fmt(s: String): CharSequence = Html.fromHtml(
-                  TextUtils.htmlEncode(s).replace(Regex("(?m)^#{1,4}\\s*"), "")
-                      .replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>").replace("\n", "<br>"),
-                  Html.FROM_HTML_MODE_COMPACT
-              )
-
-              // ---------- ekranlar ----------
-              private fun home() {
-                  onHome = true
-                  screen = { home() }
-                  val col = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(dp(14), dp(12), dp(14), dp(24))
-                  }
-                  col.addView(bar("Yordamchi", false,
-                      ib("🕘") { history() },
-                      ib("🌓") { dark = !dark; prefs.edit().putBoolean("dark", dark).apply(); applyBg(); screen() },
-                      ib("🔑") { askKey() }))
-                  col.addView(tv("Salom! Bugun nimani hal qilamiz?", 22f, bold = true).apply { setPadding(dp(4), dp(18), dp(4), dp(4)) })
-                  col.addView(tv("Zonani tanlang yoki Avto rejimda yozing.", 14f, mut()).apply { setPadding(dp(4), 0, dp(4), dp(10)) })
-                  col.addView(zoneRow("✨", "Avto", "Zonani agent o‘zi aniqlaydi") { openZone(-1) }.also { rise(it, 0) })
-                  ZONES.forEachIndexed { i, z -> col.addView(zoneRow(z.e, z.n, z.d) { openZone(i) }.also { rise(it, i + 1) }) }
-                  setScreen(ScrollView(this).apply { addView(col) })
-              }
-
-              private fun zoneRow(e: String, n: String, d: String, f: () -> Unit) = LinearLayout(this).apply {
-                  gravity = Gravity.CENTER_VERTICAL
-                  background = glass(22)
-                  setPadding(dp(14), dp(12), dp(14), dp(12))
-                  layoutParams = lp(MATCH, WRAP).apply { bottomMargin = dp(10) }
-                  addView(tv(e, 24f).apply { gravity = Gravity.CENTER; background = glass(16) }, lp(dp(48), dp(48)).apply { rightMargin = dp(12) })
-                  addView(LinearLayout(this@MainActivity).apply {
-                      orientation = LinearLayout.VERTICAL
-                      addView(tv(n, 17f, bold = true))
-                      addView(tv(d, 13f, mut()))
-                  }, lp(0, WRAP, 1f))
-                  addView(tv("›", 28f, mut()))
-                  setOnClickListener { f() }
-                  press(this)
-              }
-
-              private fun openZone(i: Int) {
-                  zone = i
-                  hist = JSONArray()
-                  cid = ""
-                  chat()
-              }
-
-              private fun chat() {
-                  onHome = false
-                  screen = { chat() }
-                  val col = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(dp(12), dp(10), dp(12), dp(10))
-                  }
-                  col.addView(bar(if (zone >= 0) ZONES[zone].n else "Avto zona", true))
-                  chatBox = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(0, dp(8), 0, dp(8))
-                  }
-                  scroll = ScrollView(this).apply { addView(chatBox) }
-                  col.addView(scroll, lp(MATCH, 0, 1f))
-                  input = EditText(this).apply {
-                      hint = "Xabar yozing…"
-                      setHintTextColor(mut())
-                      setTextColor(fg())
-                      textSize = 16f
-                      maxLines = 5
-                      background = glass(22)
-                      setPadding(dp(16), dp(10), dp(16), dp(10))
-                  }
-                  val sendBtn = ib("↑") { send(input.text.toString()) }.apply {
-                      setTextColor(Color.WHITE)
-                      background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(accent()) }
-                  }
-                  val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-                  row.addView(input, lp(0, WRAP, 1f))
-                  row.addView(ib("🎤") { listen() })
-                  row.addView(sendBtn)
-                  col.addView(row, lp(MATCH, WRAP).apply { topMargin = dp(6) })
-                  setScreen(col)
-                  if (hist.length() == 0) {
-                      intro()
+              @Override
+              public void onBackPressed() {
+                  if (webView.canGoBack()) {
+                      webView.goBack();
                   } else {
-                      for (n in 0 until hist.length()) {
-                          val m = hist.getJSONObject(n)
-                          if (m.getString("role") == "user") {
-                              chatBox.addView(userBubble(m.getString("content")))
-                          } else {
-                              val b = botBox()
-                              fill(b, m.getString("content"))
-                              chatBox.addView(b)
-                          }
-                      }
-                      down()
+                      super.onBackPressed();
                   }
               }
-
-              private fun intro() {
-                  val b = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(dp(4), dp(12), dp(4), dp(12))
-                  }
-                  if (zone >= 0) {
-                      val z = ZONES[zone]
-                      b.addView(tv(z.e + " " + z.n, 18f, bold = true))
-                      b.addView(tv(z.d, 14f, mut()))
-                      b.addView(tv(z.s, 14f, accent()).apply {
-                          background = glass(20)
-                          setPadding(dp(14), dp(9), dp(14), dp(9))
-                          layoutParams = lp(WRAP, WRAP).apply { topMargin = dp(12) }
-                          setOnClickListener { input.setText(z.s); input.setSelection(z.s.length) }
-                      })
-                  } else {
-                      b.addView(tv("Xohlagan savolingizni yozing: agent mos zonani o‘zi tanlaydi.", 14f, mut()))
-                  }
-                  chatBox.addView(b)
-              }
-
-              private fun userBubble(t: String) = tv(t, 16f, Color.WHITE).apply {
-                  background = LayerDrawable(arrayOf<Drawable>(
-                      GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(c("#E08AB0FF"), c("#EB2F6BFF"))).apply { cornerRadius = dp(20).toFloat() },
-                      Glass(dp(20).toFloat(), dark, dp(1) * 1.5f, false)))
-                  setPadding(dp(14), dp(10), dp(14), dp(10))
-                  layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { gravity = Gravity.END; topMargin = dp(10); leftMargin = dp(48) }
-              }
-
-              private fun botBox() = LinearLayout(this).apply {
-                  orientation = LinearLayout.VERTICAL
-                  background = glass(20)
-                  setPadding(dp(14), dp(10), dp(14), dp(10))
-                  layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) }
-              }
-
-              private fun fill(b: LinearLayout, raw: String) {
-                  b.removeAllViews()
-                  b.addView(tv(fmt(raw.replace(IMG, "").replace(ALARM, "").trim())))
-                  IMG.findAll(raw).forEach { m ->
-                      val p = m.groupValues[1].trim()
-                      val iv = ImageView(this).apply {
-                          adjustViewBounds = true
-                          minimumHeight = dp(200)
-                          background = glass(16)
-                          clipToOutline = true
-                          outlineProvider = object : ViewOutlineProvider() {
-                              override fun getOutline(v: View, o: Outline) {
-                                  o.setRoundRect(0, 0, v.width, v.height, dp(16).toFloat())
-                              }
-                          }
-                          layoutParams = lp(MATCH, WRAP).apply { topMargin = dp(10) }
-                      }
-                      b.addView(iv)
-                      loadImg(iv, p, b)
-                  }
-              }
-
-              private fun loadImg(iv: ImageView, p: String, box: LinearLayout) {
-                  Thread {
-                      var bmp: Bitmap? = null
-                      try {
-                          val u = "https://image.pollinations.ai/prompt/" + URLEncoder.encode(p, "UTF-8").replace("+", "%20") +
-                              "?width=768&height=768&nologo=true&seed=" + (p.hashCode() and 0xFFFF)
-                          val cn = URL(u).openConnection() as HttpURLConnection
-                          cn.connectTimeout = 15000
-                          cn.readTimeout = 90000
-                          bmp = BitmapFactory.decodeStream(cn.inputStream)
-                      } catch (e: Exception) {
-                      }
-                      runOnUiThread {
-                          if (bmp != null) {
-                              iv.setImageBitmap(bmp)
-                          } else {
-                              box.removeView(iv)
-                              box.addView(tv("Rasm yuklanmadi. Bepul xizmat band, 15 soniyadan keyin qayta urinib ko‘ring.", 13f, mut()))
-                          }
-                      }
-                  }.start()
-              }
-
-              // ---------- suhbat ----------
-              private fun instr(): String =
-                  if (zone >= 0) BASE + "\n\nHozirgi ish zonasi: " + ZONES[zone].n + ". Ko‘rsatma: " + ZONES[zone].p
-                  else BASE + "\n\nIsh zonalari:\n" + ZONES.joinToString("\n") { "- " + it.n + ": " + it.p } +
-                      "\nSavolga mos zonani o‘zing aniqla va so‘rab o‘tirma."
-
-              private fun send(text: String) {
-                  val t = text.trim()
-                  if (t.isEmpty() || busy) return
-                  input.setText("")
-                  if (cid.isEmpty()) cid = System.currentTimeMillis().toString()
-                  hist.put(JSONObject().put("role", "user").put("content", t))
-                  if (hist.length() == 1) chatBox.removeAllViews()
-                  chatBox.addView(userBubble(t))
-                  val b = botBox()
-                  b.addView(tv("Yozmoqda…", 16f, mut()))
-                  chatBox.addView(b)
-                  rise(b, 0)
-                  down()
-                  busy = true
-                  Thread {
-                      val r = gemini()
-                      runOnUiThread {
-                          busy = false
-                          if (r.first) {
-                              hist.put(JSONObject().put("role", "assistant").put("content", r.second))
-                              fill(b, r.second)
-                              alarms(r.second, b)
-                              save()
-                          } else {
-                              hist.remove(hist.length() - 1)
-                              val m = r.second
-                              val msg = when {
-                                  m == "NOKEY" -> "Avval 🔑 tugmasidan API kalitni kiriting."
-                                  Regex("HTTP (400|401|403)").containsMatchIn(m) -> "API kalit noto‘g‘ri. 🔑 tugmasidan yangilang."
-                                  m.contains("429") -> "So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring."
-                                  m == "EMPTY" -> "Javob bo‘sh keldi. Savolni boshqacha yozib ko‘ring."
-                                  else -> "Xatolik. Internetni tekshirib, qayta urinib ko‘ring."
-                              }
-                              b.removeAllViews()
-                              b.addView(tv(msg, 15f, mut()))
-                          }
-                          down()
-                      }
-                  }.start()
-              }
-
-              private fun gemini(): Pair<Boolean, String> {
-                  val key = key()
-                  if (key.isEmpty()) return Pair(false, "NOKEY")
-                  var out = "NET"
-                  try {
-                      val contents = JSONArray()
-                      for (n in 0 until hist.length()) {
-                          val t = hist.getJSONObject(n)
-                          val role = if (t.getString("role") == "assistant") "model" else "user"
-                          contents.put(JSONObject().put("role", role)
-                              .put("parts", JSONArray().put(JSONObject().put("text", t.getString("content")))))
-                      }
-                      val body = JSONObject()
-                          .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", instr()))))
-                          .put("contents", contents)
-                          .put("generationConfig", JSONObject().put("maxOutputTokens", 2048))
-                          .toString().toByteArray()
-                      for (m in MODELS) {
-                          val cn = URL("https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent")
-                              .openConnection() as HttpURLConnection
-                          cn.requestMethod = "POST"
-                          cn.doOutput = true
-                          cn.connectTimeout = 15000
-                          cn.readTimeout = 90000
-                          cn.setRequestProperty("content-type", "application/json")
-                          cn.setRequestProperty("x-goog-api-key", key)
-                          cn.outputStream.use { it.write(body) }
-                          val code = cn.responseCode
-                          val s = (if (code < 400) cn.inputStream else cn.errorStream).bufferedReader().readText()
-                          if (code in 200..299) {
-                              val parts = JSONObject(s).optJSONArray("candidates")?.optJSONObject(0)
-                                  ?.optJSONObject("content")?.optJSONArray("parts")
-                              val text = if (parts == null) "" else (0 until parts.length())
-                                  .map { parts.getJSONObject(it) }
-                                  .filter { !it.optBoolean("thought") }
-                                  .joinToString("") { it.optString("text") }
-                              return if (text.isNotEmpty()) Pair(true, text) else Pair(false, "EMPTY")
-                          }
-                          out = "HTTP $code"
-                          if (code != 404 && code != 429 && code != 503) break
-                      }
-                  } catch (e: Exception) {
-                      out = "NET"
-                  }
-                  return Pair(false, out)
-              }
-
-              private fun alarms(raw: String, b: LinearLayout) {
-                  ALARM.findAll(raw).forEach { m ->
-                      val h = m.groupValues[1].toInt()
-                      val mi = m.groupValues[2].toInt()
-                      var ok = h in 0..23 && mi in 0..59
-                      if (ok) {
-                          try {
-                              val i = Intent(AlarmClock.ACTION_SET_ALARM)
-                                  .putExtra(AlarmClock.EXTRA_HOUR, h)
-                                  .putExtra(AlarmClock.EXTRA_MINUTES, mi)
-                                  .putExtra(AlarmClock.EXTRA_MESSAGE, m.groupValues[3].ifEmpty { "Yordamchi" })
-                                  .putExtra(AlarmClock.EXTRA_SKIP_UI, true)
-                              val d = m.groupValues[4].split(",").mapNotNull { it.trim().toIntOrNull() }.filter { it in 1..7 }
-                              if (d.isNotEmpty()) i.putIntegerArrayListExtra(AlarmClock.EXTRA_DAYS, ArrayList(d))
-                              startActivity(i)
-                          } catch (e: Exception) {
-                              ok = false
-                          }
-                      }
-                      val hm = "%02d:%02d".format(h, mi)
-                      b.addView(tv(if (ok) "⏰ Budilnik qo‘yildi: $hm" else "Budilnik qo‘yilmadi: $hm", 14f, mut()))
-                  }
-              }
-
-              // ---------- ovoz ----------
-              private fun listen() {
-                  try {
-                      startActivityForResult(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                          .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                          .putExtra(RecognizerIntent.EXTRA_LANGUAGE, "uz-UZ")
-                          .putExtra(RecognizerIntent.EXTRA_PROMPT, "Gapiring…"), 7)
-                  } catch (e: Exception) {
-                      Toast.makeText(this, "Ovozli kiritish topilmadi", Toast.LENGTH_SHORT).show()
-                  }
-              }
-
-              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-                  super.onActivityResult(requestCode, resultCode, data)
-                  if (requestCode == 7 && resultCode == RESULT_OK) {
-                      val t = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: return
-                      input.setText((input.text.toString() + " " + t).trim())
-                      input.setSelection(input.text.length)
-                  }
-              }
-
-              // ---------- tarix ----------
-              private fun load(): JSONArray = try { JSONArray(prefs.getString("yh", "[]")) } catch (e: Exception) { JSONArray() }
-              private fun store(a: JSONArray) { prefs.edit().putString("yh", a.toString()).apply() }
-
-              private fun save() {
-                  if (hist.length() == 0 || cid.isEmpty()) return
-                  val old = load()
-                  val a = JSONArray()
-                  a.put(JSONObject().put("id", cid).put("z", zone)
-                      .put("title", hist.getJSONObject(0).getString("content").take(40))
-                      .put("m", hist).put("t", System.currentTimeMillis()))
-                  for (n in 0 until old.length()) {
-                      val o = old.getJSONObject(n)
-                      if (o.getString("id") != cid && a.length() < 50) a.put(o)
-                  }
-                  store(a)
-              }
-
-              private fun history() {
-                  onHome = false
-                  screen = { history() }
-                  val col = LinearLayout(this).apply {
-                      orientation = LinearLayout.VERTICAL
-                      setPadding(dp(14), dp(12), dp(14), dp(24))
-                  }
-                  col.addView(bar("Suhbatlar", true))
-                  val a = load()
-                  if (a.length() == 0) {
-                      col.addView(tv("Hali suhbat yo‘q.", 15f, mut()).apply { setPadding(dp(4), dp(16), 0, 0) })
-                  }
-                  for (n in 0 until a.length()) {
-                      val o = a.getJSONObject(n)
-                      val z = o.getInt("z")
-                      val row = LinearLayout(this).apply {
-                          gravity = Gravity.CENTER_VERTICAL
-                          background = glass(18)
-                          layoutParams = lp(MATCH, WRAP).apply { topMargin = dp(10) }
-                      }
-                      val box = LinearLayout(this).apply {
-                          orientation = LinearLayout.VERTICAL
-                          setPadding(dp(14), dp(12), dp(8), dp(12))
-                          addView(tv(o.getString("title"), 16f, bold = true).apply { maxLines = 1; ellipsize = TextUtils.TruncateAt.END })
-                          addView(tv((if (z >= 0) ZONES[z].n else "Avto") + " · " +
-                              java.text.DateFormat.getDateInstance().format(java.util.Date(o.getLong("t"))), 12f, mut()))
-                          setOnClickListener { zone = z; cid = o.getString("id"); hist = o.getJSONArray("m"); chat() }
-                      }
-                      press(box)
-                      row.addView(box, lp(0, WRAP, 1f))
-                      row.addView(tv("🗑", 18f).apply {
-                          setPadding(dp(14), dp(12), dp(14), dp(12))
-                          setOnClickListener { a.remove(n); store(a); history() }
-                      })
-                      col.addView(row)
-                  }
-                  setScreen(ScrollView(this).apply { addView(col) })
-              }
-
-              private fun askKey() {
-                  val et = EditText(this).apply {
-                      hint = "Gemini API kalit (AIza…)"
-                      setText(key())
-                      setSingleLine()
-                  }
-                  AlertDialog.Builder(this)
-                      .setTitle("API kalit")
-                      .setMessage("aistudio.google.com/apikey dan bepul oling")
-                      .setView(et)
-                      .setPositiveButton("Saqlash") { _, _ -> prefs.edit().putString("key", et.text.toString().trim()).apply() }
-                      .setNegativeButton("Bekor", null)
-                      .show()
-              }
-
-              private fun goBack() { if (onHome) finish() else home() }
-
-              @Suppress("DEPRECATION")
-              override fun onBackPressed() { goBack() }
           }
-          __EOF__
-          mkdir -p 'Yordamchi/gradle/wrapper'
-          cat > 'Yordamchi/gradle/wrapper/gradle-wrapper.properties' <<'__EOF__'
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.9-bin.zip
-          __EOF__
-      - name: Build debug APK
-        working-directory: Yordamchi
-        run: gradle assembleDebug --no-daemon
-      - uses: actions/upload-artifact@v4
+          EOF
+
+          [ -f app/src/main/assets/index.html ] || cat > app/src/main/assets/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="uz">
+          <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+          <title>Dadam Yordamchisi</title>
+          <style>
+              * { box-sizing: border-box; margin: 0; padding: 0; }
+              body {
+                  font-family: Arial, sans-serif;
+                  background: #f0f4f8;
+                  display: flex;
+                  flex-direction: column;
+                  height: 100vh;
+              }
+              .header {
+                  background: #2c7be5;
+                  color: white;
+                  padding: 20px;
+                  text-align: center;
+                  font-size: 24px;
+                  font-weight: bold;
+              }
+              .chat-box {
+                  flex: 1;
+                  overflow-y: auto;
+                  padding: 15px;
+              }
+              .message {
+                  margin: 10px 0;
+                  padding: 15px;
+                  border-radius: 15px;
+                  font-size: 20px;
+                  max-width: 85%;
+                  line-height: 1.4;
+                  white-space: pre-wrap;
+              }
+              .user-msg {
+                  background: #2c7be5;
+                  color: white;
+                  margin-left: auto;
+                  border-bottom-right-radius: 3px;
+              }
+              .bot-msg {
+                  background: white;
+                  color: #333;
+                  border: 2px solid #e0e0e0;
+                  border-bottom-left-radius: 3px;
+              }
+              .input-area {
+                  display: flex;
+                  padding: 15px;
+                  background: white;
+                  border-top: 2px solid #e0e0e0;
+              }
+              #userInput {
+                  flex: 1;
+                  padding: 15px;
+                  font-size: 20px;
+                  border: 2px solid #ccc;
+                  border-radius: 25px;
+                  outline: none;
+              }
+              #sendBtn {
+                  margin-left: 10px;
+                  padding: 15px 25px;
+                  font-size: 20px;
+                  background: #2c7be5;
+                  color: white;
+                  border: none;
+                  border-radius: 25px;
+              }
+              .loading {
+                  text-align: center;
+                  color: #999;
+                  font-size: 18px;
+                  padding: 10px;
+              }
+          </style>
+          </head>
+          <body>
+          <div class="header">🤖 Dadam Yordamchisi</div>
+          <div class="chat-box" id="chatBox">
+              <div class="message bot-msg">Assalomu alaykum! Savolingizni yozing. 😊</div>
+          </div>
+          <div class="input-area">
+              <input type="text" id="userInput" placeholder="Savolingizni yozing..." />
+              <button id="sendBtn" onclick="sendMessage()">Yuborish</button>
+          </div>
+          <script>
+          const API_KEY = "YANGI_GEMINI_API_KEY_SHU_YERGA";
+          const chatBox = document.getElementById('chatBox');
+          const userInput = document.getElementById('userInput');
+
+          userInput.addEventListener('keypress', function(e) {
+              if (e.key === 'Enter') sendMessage();
+          });
+
+          function addMessage(text, isUser) {
+              const div = document.createElement('div');
+              div.className = 'message ' + (isUser ? 'user-msg' : 'bot-msg');
+              div.innerText = text;
+              chatBox.appendChild(div);
+              chatBox.scrollTop = chatBox.scrollHeight;
+          }
+
+          async function sendMessage() {
+              const text = userInput.value.trim();
+              if (!text) return;
+
+              if (API_KEY === "YANGI_GEMINI_API_KEY_SHU_YERGA") {
+                  addMessage("⚠️ API kalit qo'yilmagan. index.html faylida API_KEY ni o'zgartiring.", false);
+                  return;
+              }
+
+              addMessage(text, true);
+              userInput.value = '';
+
+              const loadingDiv = document.createElement('div');
+              loadingDiv.className = 'loading';
+              loadingDiv.innerText = 'Yozmoqda...';
+              chatBox.appendChild(loadingDiv);
+              chatBox.scrollTop = chatBox.scrollHeight;
+
+              try {
+                  const response = await fetch(
+                      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY,
+                      {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                              systemInstruction: {
+                                  parts: [{ text: "Siz foydali, mehribon va sodda tilda javob beruvchi yordamchisiz. Har doim o'zbek tilida, qisqa va tushunarli javob bering." }]
+                              },
+                              contents: [
+                                  { role: "user", parts: [{ text: text }] }
+                              ]
+                          })
+                      }
+                  );
+
+                  const data = await response.json();
+                  loadingDiv.remove();
+
+                  const answer = data.candidates &&
+                                 data.candidates[0] &&
+                                 data.candidates[0].content &&
+                                 data.candidates[0].content.parts &&
+                                 data.candidates[0].content.parts[0] &&
+                                 data.candidates[0].content.parts[0].text;
+
+                  if (answer) {
+                      addMessage(answer, false);
+                  } else {
+                      const errMsg = (data.error && data.error.message) ? data.error.message : 'Noma\'lum xatolik';
+                      addMessage('Xatolik: ' + errMsg, false);
+                  }
+              } catch (error) {
+                  loadingDiv.remove();
+                  addMessage('Internet aloqasini tekshiring.', false);
+              }
+          }
+          </script>
+          </body>
+          </html>
+          EOF
+
+      - name: APK yasash
+        run: gradle assembleDebug
+
+      - name: APK yuklash
+        uses: actions/upload-artifact@v4
         with:
-          name: Yordamchi-APK
-          path: Yordamchi/app/build/outputs/apk/debug/app-debug.apk
+          name: dadam-yordamchi-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Xabar
+        run: |
+          echo "✅ APK tayyor!"
+          ls -la app/build/outputs/apk/debug/
